@@ -11,17 +11,8 @@ Voxels::Voxels(const Array3f &voxelShape, const Array3i &boundShape) {
 void Voxels::setSDF(const std::string &sdf) {
     mHasSDF = true;
 
-//    mVoxignProgram.free();
-//    mVoxignProgram.initFromFiles("slicer", "shaders/pass.glsl", "shaders/slice.glsl");
-    auto file_to_string = [](const std::string &filename) -> std::string {
-        if (filename.empty())
-            return "";
-        std::ifstream t(filename);
-        return std::string((std::istreambuf_iterator<char>(t)),
-                           std::istreambuf_iterator<char>());
-    };
-
-    mVoxignProgram.init("ray_marcher", file_to_string("shaders/pss.glsl"), file_to_string("shaders/slice.glsl"));
+    mVoxignProgram.free();
+    mVoxignProgram.initFromFiles("slicer", "shaders/pass.glsl", "shaders/slice.glsl");
 
     nanogui::MatrixXu indices(3, 2);
     indices.col(0) << 0, 1, 2;

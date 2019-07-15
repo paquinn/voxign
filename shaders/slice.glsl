@@ -26,9 +26,10 @@ float Sphere(vec3 p,float r)
 
 float MyObject(vec3 p,float res)
 {
-    p=Mirror(p);
-    res=Union(res,Sphere(Translate(p,vec3(0.5,1.0,0.5)),1.0));
-    res=Union(res,Sphere(Translate(p,vec3(1.1,0.0,0.5)),1.0));
+    res = Union(res, Sphere(p, 300.));
+//    p=Mirror(p);
+//    res=Union(res,Sphere(Translate(p,vec3(0.5,1.0,0.5)),1.0));
+//    res=Union(res,Sphere(Translate(p,vec3(1.1,0.0,0.5)),1.0));
     return res;
 }
 
@@ -39,15 +40,15 @@ void main()
     // Center of volume in xy plane
     vec2 xy = uv * volume.xy;
     // Center our slice on z axis
-    float z = slice - (volume.z / 2.0);
+//    float z = slice - (volume.z / 2.0);
+    float z = slice;
     // Compute offset
     vec3 p = vec3(xy, z) - offset;
 
     // Check if we're inside an object
     float t = DE(p);
     float col = t > 0 ? 1.0 : 0.0;
-//    gl_FragColor = vec4(vec3(col), 1.0);
-    gl_FragColor = vec4(1.0, 0.2, 0.1, 1.0);
+    gl_FragColor = vec4(vec3(col), 1.0);
 }
 
 
