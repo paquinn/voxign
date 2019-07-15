@@ -17,7 +17,14 @@ include_directories(ext/tinyformat)
 add_definitions(${NANOGUI_EXTRA_DEFS})
 
 add_executable(voxign
-    src/main.cpp)
+        include/viewer.h
+        include/common.h
+        include/voxels.h
+        
+        src/main.cpp
+        src/viewer.cpp
+        src/voxels.cpp
+        )
 
 target_link_libraries(voxign 
     nanogui ${NANOGUI_EXTRA_LIBS} 
