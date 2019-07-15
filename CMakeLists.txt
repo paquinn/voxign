@@ -20,7 +20,7 @@ add_executable(voxign
         include/viewer.h
         include/common.h
         include/voxels.h
-        
+
         src/main.cpp
         src/viewer.cpp
         src/voxels.cpp

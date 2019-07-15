@@ -1,4 +1,5 @@
 #include <voxels.h>
+#include <fstream>
 
 Voxels::Voxels(const Array3f &voxelShape, const Array3i &boundShape) {
     resizeVoxels(voxelShape);
@@ -10,8 +11,17 @@ Voxels::Voxels(const Array3f &voxelShape, const Array3i &boundShape) {
 void Voxels::setSDF(const std::string &sdf) {
     mHasSDF = true;
 
-    mVoxignProgram.free();
-    mVoxignProgram.init("", "", ""); // TODO: Compile full shaders here
+//    mVoxignProgram.free();
+//    mVoxignProgram.initFromFiles("slicer", "shaders/pass.glsl", "shaders/slice.glsl");
+    auto file_to_string = [](const std::string &filename) -> std::string {
+        if (filename.empty())
+            return "";
+        std::ifstream t(filename);
+        return std::string((std::istreambuf_iterator<char>(t)),
+                           std::istreambuf_iterator<char>());
+    };
+
+    mVoxignProgram.init("ray_marcher", file_to_string("shaders/pss.glsl"), file_to_string("shaders/slice.glsl"));
 
     nanogui::MatrixXu indices(3, 2);
     indices.col(0) << 0, 1, 2;
@@ -25,9 +35,11 @@ void Voxels::setSDF(const std::string &sdf) {
     mVoxignProgram.bind();
     mVoxignProgram.uploadIndices(indices);
     mVoxignProgram.uploadAttrib("position", positions);
-//    mVoxignProgram.setUniform("resolution", Vector2f{mSize.coeff(0), mSize.coeff(1)});
-    mVoxignProgram.setUniform("resolution", mBounds.cast<float>());
-    mVoxignProgram.setUniform("volume", volume());
+
+    Vector3f vol = volume();
+    Vector3f res = mBounds.cast<float>();
+    mVoxignProgram.setUniform("resolution", res);
+    mVoxignProgram.setUniform("volume", vol);
 
 }
 
@@ -69,7 +81,7 @@ void Voxels::renderLayer(unsigned long layerIndex) {
     // TODO: set more uniforms here
     float layer = 0.0f;
 
-    mVoxignProgram.setUniform("layer", layer);
+    mVoxignProgram.setUniform("slice", layer);
 
     glDisable(GL_DEPTH_TEST);
     mVoxignProgram.drawIndexed(GL_TRIANGLES, 0, 2);

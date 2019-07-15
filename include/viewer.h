@@ -12,6 +12,8 @@ public:
     Viewer();
     ~Viewer();
 
+    virtual void drawContents();
+
     void loadPython(const std::string& filename);
     void reloadPython();
 
