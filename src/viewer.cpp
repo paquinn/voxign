@@ -6,12 +6,16 @@ Viewer::Viewer() :
 {
 //    mVoxels
     mVoxels.setSDF("");
+    mVoxels.voxelizeLayer(0);
+    mVoxels.saveLayer(0);
 }
 
 void Viewer::drawContents() {
     using namespace nanogui;
 
+    mVoxels.voxelizeLayer(0);
     mVoxels.renderLayer(0);
+
 }
 
 Viewer::~Viewer() {

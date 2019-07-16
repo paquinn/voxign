@@ -41,6 +41,24 @@ public:
     typedef Array<RGB, Dynamic, Dynamic, RowMajor> Base;
 
     Layer(const Vector2i &size = Vector2i(0, 0)) : Base(size.x(), size.y()) {}
+
+    void savePNG(const std::string &name) {
+        std::vector<unsigned char> image;
+        image.resize(cols() * rows() * 4);
+        for (unsigned i = 0; i < cols(); ++i) {
+            for (unsigned j = 0; j < rows(); ++j) {
+                image[4 * (i + j * cols()) + 0] = static_cast<unsigned char>((*this)(j,i).r() * 255);
+                image[4 * (i + j * cols()) + 1] = static_cast<unsigned char>((*this)(j,i).g() * 255);
+                image[4 * (i + j * cols()) + 2] = static_cast<unsigned char>((*this)(j,i).b() * 255);
+                image[4 * (i + j * cols()) + 3] = 255;
+            }
+        }
+
+        unsigned error = lodepng::encode(name, image, cols(), rows());
+
+        if(error)
+            fprintf(stderr, "Save PNG err: %d: %s\n", error, lodepng_error_text(error));
+    }
 };
 
 class Voxels {
@@ -62,11 +80,11 @@ public:
     bool finished(unsigned long layer);
     bool finishedAll();
 
+    void saveLayer(unsigned long layer);
+
     Array2i layerSize() { return mSize; }
     unsigned long layerCount() {return mVoxels.size(); }
-    Array3f volume() {
-        return mVoxelShape.cwiseProduct(mBounds.cast<float>());
-    }
+    Array3f volume() { return mVoxelShape.cwiseProduct(mBounds.cast<float>()); }
     Array3f shape() { return mVoxelShape; }
 
 private:

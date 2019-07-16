@@ -104,6 +104,10 @@ void Voxels::resizeLayers(unsigned long layers) {
     mFinishedLayers.resize(layers);
 }
 
+bool Voxels::finished(unsigned long layer) {
+    return mFinishedLayers.at(layer);
+}
+
 bool Voxels::finishedAll() {
     for (bool finished : mFinishedLayers) {
         if (!finished) return false;
@@ -111,8 +115,13 @@ bool Voxels::finishedAll() {
     return true;
 }
 
-bool Voxels::finished(unsigned long layer) {
-    return mFinishedLayers.at(layer);
+void Voxels::saveLayer(unsigned long layer) {
+    if (finished(layer)) {
+        std::string name = tfm::format("%06d.png", layer);
+        mVoxels.at(layer).savePNG(name);
+    } else {
+        std::cout << "Layer not rendered " << layer << std::endl;
+    }
 }
 
 Voxels::~Voxels() {
