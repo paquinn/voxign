@@ -1,50 +1,90 @@
 #include <pybind11/embed.h>
 #include <Python.h>
+#include <tuple>
 
 #include "viewer.h"
 #include "voxels.h"
 
 using namespace std;
+using namespace args;
+
 namespace py = pybind11;
 
-void run_all() {
-    nanogui::init();
-    test_clear();
-    test_finishedAll();
-    test_resizeVolume();
-    nanogui::shutdown();
+int parseArgs(const vector<string>& args) {
+
+    ArgumentParser parser(
+                    "voxign - Voxel Sign\n"
+                    "version " VOXIGN_VERSION "\n"
+                    "Tool for inspecting and voxelizing SDFs\n"
+                    "Developed by Phillip Quinn <paquinn@cs.uw.edu>."
+    );
+
+    Flag versionFlag {parser, "VERSION", "Display the version of voxign", {"version"}};
+
+    HelpFlag helpFlag {parser, "HELP", "Display help menu.", {'h', "help"}};
+
+    ValueFlag<tuple3f> volumeFlag {parser, "VOLUME", "Volume for the voxelization. For verison number use --version.", {'v', "volume"}};
+    ValueFlag<tuple3i> boundsFlag {parser, "BOUNDS", "Number of voxels in each dimension.", {'b', "bounds"}};
+    ValueFlag<tuple3f> sizeFlag {parser, "SIZE", "Size of the voxels.", {'s', "size"}};
+
+    Flag autoFlag {parser, "AUTO", "Auto mode will output voxelization without opening window. Must have INPUT and OUTPUT set.have INPUT and OUTPUT set.", {'a', "auto"}};
+
+    Positional<string> inputFile {parser, "INPUT", "File to be loaded and viewed, can be changed later."};
+    ValueFlag<string> outputFolder {parser, "OUTPUT", "Folder to save the voxelization layers.", {'o', "output"}};
+
+    try {
+        parser.ParseArgs(args);
+    } catch (const Help&) {
+        cout << "Help flag triggered" << endl;
+        cout << parser;
+        return 0;
+    } catch (const ParseError& e) {
+        cerr << e.what() << endl;
+        cerr << parser;
+        return -1;
+    } catch (const ValidationError& e) {
+        cerr << e.what() << endl;
+        cerr << parser;
+        return -2;
+    }
+
+    if (versionFlag) {
+        cout << "version " << VOXIGN_VERSION << endl;
+        return 0;
+    }
+
+    try {
+        nanogui::init();
+        py::scoped_interpreter guard{};
+        {
+            nanogui::ref<Viewer> screen = new Viewer();
+//            if (sizeFlag) { screen->setVoxelSize(castTuple(get(sizeFlag))); }
+//            if (boundsFlag) { screen->setVoxelSize(castTuple(get(boundsFlag))); }
+//            if (volumeFlag) { screen->setVoxelSize(castTuple(get(volumeFlag))); }
+            screen->drawAll();
+            screen->setVisible(true);
+            nanogui::mainloop(100);
+        }
+        nanogui::shutdown();
+    } catch (const std::exception &e) {
+        cerr << "Fatal error: " << e.what() << endl;
+        return -1;
+    }
+
+
 }
 
 int main(int argc, char* argv[]) {
-    bool run_tests = false;
-
-    if (run_tests) {
-        py::scoped_interpreter guard{};
-
-        py::module compiler = py::module::import("marcher.compiler");
-        py::module framework = py::module::import("marcher.framework");
-        py::module sdf = py::module::import("basic");
-        py::object root = sdf.attr("sdf");
-
-        py::print(compiler.attr("compile")(root, framework.attr("renderFramework")));
-
-    } else {
-        try {
-            nanogui::init();
-            py::scoped_interpreter guard{};
-            {
-                nanogui::ref<Viewer> screen = new Viewer();
-                screen->drawAll();
-                screen->setVisible(true);
-                nanogui::mainloop(100);
-            }
-            nanogui::shutdown();
-        } catch (const std::exception &e) {
-            cerr << "Fatal error: " << e.what() << endl;
-            return -1;
+    try {
+        vector<string> args;
+        for (int i = 0; i < argc; ++i) {
+            args.emplace_back(argv[i]);
         }
+        parseArgs(args);
+    } catch (const exception& e) {
+        std::cerr << tfm::format("Uncaught exception: %s", e.what());
+        return 1;
     }
-
     return 0;
 }
 

@@ -1,4 +1,3 @@
-#include <fstream>
 #include "viewer.h"
 
 Viewer::Viewer() :
@@ -34,11 +33,26 @@ Viewer::Viewer() :
     mRenderProgram.uploadAttrib("position", positions);
 }
 
+void Viewer::setFile(const std::string &filename) {
+    mCompiler.load(filename);
+}
+
+void Viewer::setVoxelSize(Eigen::Vector3f size) {
+    mVoxels.resizeVoxels(size);
+}
+
+void Viewer::setBounds(Eigen::Vector3i bounds) {
+    mVoxels.resizeBounds(bounds);
+}
+
+void Viewer::setVolume(Eigen::Vector3f volume) {
+    mVoxels.resizeVolume(volume);
+}
+
 void Viewer::drawContents() {
     using namespace nanogui;
 
     mRenderProgram.bind();
-
     mRenderProgram.setUniform("resolution", Vector2f{mFBSize[0], mFBSize[1]}, false);
     mRenderProgram.setUniform("mouse", Vector2f{mMousePos[0], mMousePos[1]}, false);
     glEnable(GL_DEPTH_TEST);

@@ -15,11 +15,16 @@ public:
 
     virtual void drawContents();
 
-    void loadPython(const std::string& filename);
     void reloadPython();
 
     void initializeGL();
     void initializeLayout();
+
+    void setFile(const std::string &filename);
+
+    void setVoxelSize(Eigen::Vector3f size);
+    void setBounds(Eigen::Vector3i bounds);
+    void setVolume(Eigen::Vector3f volume);
 
 private:
 //    nanogui::GLShader mPreviewMarcherProgram;

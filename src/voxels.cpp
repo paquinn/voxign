@@ -76,7 +76,6 @@ void Voxels::renderLayer(unsigned long layerIndex) {
 
     glDisable(GL_DEPTH_TEST);
     mVoxignProgram.drawIndexed(GL_TRIANGLES, 0, 2);
-
 }
 
 void Voxels::voxelizeLayer(unsigned long layer) {
