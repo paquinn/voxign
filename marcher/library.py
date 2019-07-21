@@ -1,5 +1,5 @@
-from voxign.marcher.function import Primitive, Combinator, Operator
-from voxign.marcher.vector import vec3, vec2
+from marcher.function import Primitive, Combinator, Operator
+from marcher.vector import vec3, vec2
 
 
 # --- Primitives --- #

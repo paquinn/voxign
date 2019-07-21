@@ -8,11 +8,11 @@ Voxels::Voxels(const Array3f &voxelShape, const Array3i &boundShape) {
     mHasSDF = false;
 }
 
-void Voxels::setSDF(const std::string &sdf) {
+void Voxels::setShader(const std::string &shader) {
     mHasSDF = true;
 
     mVoxignProgram.free();
-    mVoxignProgram.initFromFiles("slicer", "shaders/pass.glsl", "shaders/slice.glsl");
+    mVoxignProgram.initFromFiles("slicer", "shaders/pass.glsl", shader);
 
     nanogui::MatrixXu indices(3, 2);
     indices.col(0) << 0, 1, 2;

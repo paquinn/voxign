@@ -5,33 +5,9 @@ uniform vec3 volume;
 uniform vec3 offset;
 uniform float slice;
 
-#define DE(x) (MyObject((x),1e20))
+// [statics]
 
-float Union(float d1,float d2)
-{
-    return min(d1, d2);
-}
-vec3 Mirror(vec3 p)
-{
-    return abs(p);
-}
-vec3 Translate(vec3 p,vec3 t)
-{
-    return p - t;
-}
-float Sphere(vec3 p,float r)
-{
-    return length(p) - r;
-}
-
-float MyObject(vec3 p,float res)
-{
-    res = Union(res, Sphere(p, 300.));
-//    p=Mirror(p);
-//    res=Union(res,Sphere(Translate(p,vec3(0.5,1.0,0.5)),1.0));
-//    res=Union(res,Sphere(Translate(p,vec3(1.1,0.0,0.5)),1.0));
-    return res;
-}
+// [functions]
 
 void main()
 {
@@ -40,8 +16,7 @@ void main()
     // Center of volume in xy plane
     vec2 xy = uv * volume.xy;
     // Center our slice on z axis
-//    float z = slice - (volume.z / 2.0);
-    float z = slice;
+    float z = slice - (volume.z / 2.0);
     // Compute offset
     vec3 p = vec3(xy, z) - offset;
 

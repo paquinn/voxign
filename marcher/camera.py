@@ -58,29 +58,6 @@ class Camera:
             raise ValueError('Shader compilation failed')
         return shader
 
-    @staticmethod
-    def insert(into, outside, at):
-
-        split = outside.split(at)
-        assert len(split) == 2, "Can only split at one location not %r" % str(len(split) - 1)
-        return split[0] + into + split[1]
-
-    def compile(self, obj):
-        statics = self.get_statics()
-        statics += '#define DE(x) ' + obj.name + '((x),1e20)'
-        stack = []
-        obj.toposort(set(), set(), stack)
-        functions = ''
-        for fn in reversed(stack):
-            functions += str(Function.registry[fn]) + '\n'
-        frag_dir = os.path.join(os.path.dirname(__file__), '../../shaders/preview.glsl')
-        f_shader = open(frag_dir).read()
-        # f_shader = frag_blueprint
-        f_shader = self.insert(statics, f_shader, '// [statics]')
-        f_shader = self.insert(functions, f_shader, '// [functions]')
-
-        return f_shader
-
     def view(self, obj):
         shader = self.compile(obj)
         self.render(shader)

@@ -67,7 +67,7 @@ public:
     Voxels(const Array3f &voxelShape, const Array3i &boundShape);
     ~Voxels();
 
-    void setSDF(const std::string &sdf);
+    void setShader(const std::string &shader);
     void resizeVoxels(const Array3f &shape);
     void resizeBounds(const Array3i &shape);
     void resizeVolume(const Array3f &shape);

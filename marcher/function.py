@@ -1,7 +1,7 @@
 import inspect
 
-from voxign.marcher.variable import Var
-from voxign.marcher.vector import make_param, vec3
+from marcher.variable import Var
+from marcher.vector import make_param, vec3
 
 
 class Function:
@@ -111,7 +111,7 @@ class Primitive(Function):
 
         def wrap_location(self):
             if self.location:
-                from voxign.marcher.library import Translate
+                from marcher.library import Translate
                 return Translate(self.location, f=self.f)
                 # return self.f
             else:

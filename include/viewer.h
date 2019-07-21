@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "voxels.h"
+#include "compiler.h"
 
 #include <nanogui/screen.h>
 #include <nanogui/glutil.h>
@@ -21,11 +22,12 @@ public:
     void initializeLayout();
 
 private:
-    nanogui::GLShader mPreviewMarcherProgram;
-    nanogui::GLShader mPreviewVoxelProgram;
-    nanogui::GLShader mPreviewSliceProgram;
+//    nanogui::GLShader mPreviewMarcherProgram;
+//    nanogui::GLShader mPreviewVoxelProgram;
+//    nanogui::GLShader mPreviewSliceProgram;
 
-    std::string mCurrentFile;
+    nanogui::GLShader mRenderProgram;
+    Compiler mCompiler;
     Voxels mVoxels;
 
 

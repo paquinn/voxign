@@ -24,7 +24,7 @@ add_executable(voxign
         src/main.cpp
         src/viewer.cpp
         src/voxels.cpp
-        )
+        include/compiler.h src/compiler.cpp)
 
 target_link_libraries(voxign 
     nanogui ${NANOGUI_EXTRA_LIBS} 
