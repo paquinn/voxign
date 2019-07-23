@@ -33,6 +33,9 @@ bool Pixels::init(const std::string &name, const std::string &fragment_str) {
 }
 
 void Pixels::draw() {
+    if (!ready()) {
+        throw std::runtime_error{tfm::format("Draw was called before shader was successfully initialized.")};
+    }
     glDisable(GL_DEPTH_TEST);
     drawIndexed(GL_TRIANGLES, 0, 2);
 }

@@ -18,12 +18,5 @@ private:
     py::module mFramework;
     std::string mCurrentFile;
 
-//    py::object mRenderFramework;
-//    py::object mSDF;
-//    bool successful;
-//    std::string lastSuccessful;
-//    std::string mError;
-//    static bool initialized;
-
 };
 #endif //VOXIGN_COMPILER_H

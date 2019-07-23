@@ -24,9 +24,8 @@ public:
     void setInputFile(const std::string &filename);
     void setOutputFolder(const std::string &foldername);
 
-    void setVoxelSize(Eigen::Array3f size);
-    void setBounds(Eigen::Array3i bounds);
-    void setVolume(Eigen::Array3f volume);
+    void setBounds(Eigen::Array3i bounds, Eigen::Array3f voxels);
+    void setVolume(Eigen::Array3f volume, Eigen::Array3f voxels);
 
 private:
 

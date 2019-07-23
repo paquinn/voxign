@@ -18,25 +18,23 @@ void Viewer::setOutputFolder(const std::string &foldername) {
     mOutputFolder = foldername;
 }
 
-void Viewer::setVoxelSize(Eigen::Array3f size) {
-    mVoxels.resizeVoxels(size);
+void Viewer::setBounds(Eigen::Array3i bounds, Eigen::Array3f voxels) {
+    mVoxels.resizeBounds(bounds, voxels);
 }
 
-void Viewer::setBounds(Eigen::Array3i bounds) {
-    mVoxels.resizeBounds(bounds);
-}
-
-void Viewer::setVolume(Eigen::Array3f volume) {
-    mVoxels.resizeVolume(volume);
+void Viewer::setVolume(Eigen::Array3f volume, Eigen::Array3f voxels) {
+    mVoxels.resizeVolume(volume, voxels);
 }
 
 void Viewer::drawContents() {
     using namespace nanogui;
 
-    mRenderProgram.bind();
-    mRenderProgram.setUniform("resolution", Vector2f{mFBSize[0], mFBSize[1]});
-    mRenderProgram.setUniform("mouse", Vector2f{mMousePos[0], mMousePos[1]}, false);
-    mRenderProgram.draw();
+    if (mRenderProgram.ready()) {
+        mRenderProgram.bind();
+        mRenderProgram.setUniform("resolution", Vector2f{mFBSize[0], mFBSize[1]});
+        mRenderProgram.setUniform("mouse", Vector2f{mMousePos[0], mMousePos[1]}, false);
+        mRenderProgram.draw();
+    }
 }
 
 Viewer::~Viewer() {

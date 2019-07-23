@@ -12,7 +12,6 @@ namespace py = pybind11;
 
 int parseArgs(const vector<string> &args) {
 
-
     ArgumentParser parser(
             "voxign - Voxel Sign\n"
                     "version " VOXIGN_VERSION "\n"
@@ -61,9 +60,19 @@ int parseArgs(const vector<string> &args) {
         {
             nanogui::ref<Viewer> screen = new Viewer();
 
-            if (sizeFlag)     { screen->setVoxelSize(tupleToArray3f(get(sizeFlag))); }
-            if (boundsFlag)   { screen->setBounds(tupleToArray3i(get(boundsFlag))); }
-            if (volumeFlag)   { screen->setVolume(tupleToArray3f(get(volumeFlag))); }
+            // TODO: This doesnt cover all cases and is not very robust
+            if (sizeFlag)     {
+                Eigen::Array3f voxelSize = tupleToArray3f(get(sizeFlag));
+                if (boundsFlag) {
+                    screen->setBounds(tupleToArray3i(get(boundsFlag)), voxelSize);
+                } else if (volumeFlag) {
+                    screen->setVolume(tupleToArray3f(get(volumeFlag)), voxelSize);
+                } else {
+                    throw ParseError{"Voxel size needs a boundry or volume"};
+                }
+            } else if (boundsFlag || volumeFlag) {
+                throw ParseError{"Voxel size must be specified"};
+            }
             if (inputFile)    { screen->setInputFile(get(inputFile)); }
             if (outputFolder) { screen->setOutputFolder(get(outputFolder)); }
 
@@ -76,6 +85,7 @@ int parseArgs(const vector<string> &args) {
         cerr << "Fatal error: " << e.what() << endl;
         return -1;
     }
+    return 0;
 }
 
 int main(int argc, char* argv[]) {
@@ -84,10 +94,9 @@ int main(int argc, char* argv[]) {
         for (int i = 0; i < argc; ++i) {
             args.emplace_back(argv[i]);
         }
-        parseArgs(args);
+        return parseArgs(args);
     } catch (const exception& e) {
         std::cerr << tfm::format("Uncaught exception: %s", e.what());
         return 1;
     }
-    return 0;
 }

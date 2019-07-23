@@ -65,37 +65,40 @@ public:
 
 class Voxels {
 public:
-    Voxels() { mHasSDF = false; };
+    Voxels() {};
     Voxels(const Array3f &voxelShape, const Array3i &boundShape);
     ~Voxels();
 
     void setShader(const std::string &shader);
-    void resizeVoxels(const Array3f &shape);
-    void resizeBounds(const Array3i &shape);
-    void resizeVolume(const Array3f &shape);
+
+//    void resizeVoxels(const Array3f &shape);
+    void resizeBounds(const Array3i &bounds, const Array3f &voxels);
+    void resizeVolume(const Array3f &volume, const Array3f &voxels);
+
+    bool ready();
 
     void clearVoxels();
 
     void renderLayer(unsigned long layer);
     void voxelizeLayer(unsigned long layer);
+    void saveLayer(unsigned long layer);
+    void saveVoxels(const std::string &folder);
 
     bool finished(unsigned long layer);
     bool finishedAll();
 
-    void saveLayer(unsigned long layer);
-
-    Array2i layerSize() { return mSize; }
-    unsigned long layerCount() {return mVoxels.size(); }
-    Array3f volume() { return mVoxelShape.cwiseProduct(mBounds.cast<float>()); }
-    Array3f shape() { return mVoxelShape; }
-
+    Array2i layerSize() { return {mBounds.coeff(0), mBounds.coeff(1)}; }
+    unsigned long layerCount() { return mVoxels.size(); }
+    Array3f volume() { return mVolume; }
+    Array3f voxelSize() { return mVoxelSize; }
+    Array3f calcVolume() { return mVoxelSize.cwiseProduct(mBounds.cast<float>()); }
+    Array3i calcBounds() { return mVolume.cwiseQuotient(mVoxelSize).ceil().cast<int>(); }
 private:
     void resizeLayers(unsigned long layers);
 
-    bool mHasSDF;
-    Array2i mSize;
+    Array3f mVolume;
     Array3i mBounds;
-    Array3f mVoxelShape;
+    Array3f mVoxelSize;
 
     std::vector<Layer> mVoxels;
     std::vector<bool> mFinishedLayers;
