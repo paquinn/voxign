@@ -10,13 +10,14 @@ using namespace args;
 
 namespace py = pybind11;
 
-int parseArgs(const vector<string>& args) {
+int parseArgs(const vector<string> &args) {
+
 
     ArgumentParser parser(
-                    "voxign - Voxel Sign\n"
+            "voxign - Voxel Sign\n"
                     "version " VOXIGN_VERSION "\n"
-                    "Tool for inspecting and voxelizing SDFs\n"
-                    "Developed by Phillip Quinn <paquinn@cs.uw.edu>."
+                    "Tool for inspecting and voxelizing SDFs\n",
+            "Developed by Phillip Quinn <paquinn@cs.uw.edu>."
     );
 
     Flag versionFlag {parser, "VERSION", "Display the version of voxign", {"version"}};
@@ -29,20 +30,21 @@ int parseArgs(const vector<string>& args) {
 
     Flag autoFlag {parser, "AUTO", "Auto mode will output voxelization without opening window. Must have INPUT and OUTPUT set.have INPUT and OUTPUT set.", {'a', "auto"}};
 
-    Positional<string> inputFile {parser, "INPUT", "File to be loaded and viewed, can be changed later."};
+    Positional<string> inputFile(parser, "INPUT", "File to be loaded and viewed, can be changed later.");
     ValueFlag<string> outputFolder {parser, "OUTPUT", "Folder to save the voxelization layers.", {'o', "output"}};
 
     try {
-        parser.ParseArgs(args);
-    } catch (const Help&) {
+        parser.Prog(args.front());
+        parser.ParseArgs(begin(args) + 1, end(args));
+    } catch (const Help &) {
         cout << "Help flag triggered" << endl;
         cout << parser;
         return 0;
-    } catch (const ParseError& e) {
+    } catch (const ParseError &e) {
         cerr << e.what() << endl;
         cerr << parser;
         return -1;
-    } catch (const ValidationError& e) {
+    } catch (const ValidationError &e) {
         cerr << e.what() << endl;
         cerr << parser;
         return -2;
@@ -58,9 +60,13 @@ int parseArgs(const vector<string>& args) {
         py::scoped_interpreter guard{};
         {
             nanogui::ref<Viewer> screen = new Viewer();
-//            if (sizeFlag) { screen->setVoxelSize(castTuple(get(sizeFlag))); }
-//            if (boundsFlag) { screen->setVoxelSize(castTuple(get(boundsFlag))); }
-//            if (volumeFlag) { screen->setVoxelSize(castTuple(get(volumeFlag))); }
+
+//            if (sizeFlag)     { screen->setVoxelSize(tupleToArray3f(get(sizeFlag))); }
+//            if (boundsFlag)   { screen->setBounds(tupleToArray3i(get(boundsFlag))); }
+//            if (volumeFlag)   { screen->setVolume(tupleToArray3f(get(volumeFlag))); }
+//            if (inputFile)    { screen->setInputFile(get(inputFile)); }
+//            if (outputFolder) { screen->setOutputFolder(get(outputFolder)); }
+
             screen->drawAll();
             screen->setVisible(true);
             nanogui::mainloop(100);
@@ -70,8 +76,6 @@ int parseArgs(const vector<string>& args) {
         cerr << "Fatal error: " << e.what() << endl;
         return -1;
     }
-
-
 }
 
 int main(int argc, char* argv[]) {
@@ -87,4 +91,3 @@ int main(int argc, char* argv[]) {
     }
     return 0;
 }
-

@@ -2,6 +2,8 @@
 #define VOXIGN_VOXELS_H
 
 #include "common.h"
+#include "pixels.h"
+
 #include <nanogui/glutil.h>
 
 
@@ -100,7 +102,7 @@ private:
     bool mFinished;
 
     nanogui::GLFramebuffer mFbo;
-    nanogui::GLShader mVoxignProgram;
+    Pixels mVoxignProgram;
 
 };
 

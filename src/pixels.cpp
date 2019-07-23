@@ -10,9 +10,10 @@ bool Pixels::init(const std::string &name, const std::string &fragment_str) {
                            std::istreambuf_iterator<char>());
     };
 
-    bool flag = nanogui::GLShader::init(name, file_to_string(mVertexShader), fragment_str);
+    bool flag = nanogui::GLShader::init(name, file_to_string(mVertexShader), file_to_string("shaders/test.glsl"));
+//    bool flag = nanogui::GLShader::init(name, file_to_string(mVertexShader), fragment_str);
 
-    if (flag) {
+//    if (flag) {
         nanogui::MatrixXu indices(3, 2);
         indices.col(0) << 0, 1, 2;
         indices.col(1) << 2, 1, 3;
@@ -23,18 +24,20 @@ bool Pixels::init(const std::string &name, const std::string &fragment_str) {
         positions.col(2) << -1, 1, 0;
         positions.col(3) << 1, 1, 0;
 
+        // bind the shader and upload vertex positions and indices
         bind();
         uploadIndices(indices);
         uploadAttrib(mPositionAttrib, positions);
 
-        return true;
-    } else {
-        return false;
-    }
+//        return true;
+//    } else {
+//        return false;
+//    }
+    return flag;
 }
 
 void Pixels::draw() {
-    glDisable(GL_DEPTH_TEST);
+//    glDisable(GL_DEPTH_TEST);
     drawIndexed(GL_TRIANGLES, 0, 2);
 }
 

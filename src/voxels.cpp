@@ -12,20 +12,7 @@ void Voxels::setShader(const std::string &shader) {
     mHasSDF = true;
 
     mVoxignProgram.free();
-    mVoxignProgram.initFromFiles("slicer", "shaders/pass.glsl", shader);
-
-    nanogui::MatrixXu indices(3, 2);
-    indices.col(0) << 0, 1, 2;
-    indices.col(1) << 2, 1, 3;
-    MatrixXf positions(3, 4);
-    positions.col(0) << -1, -1, 0;
-    positions.col(1) << 1, -1, 0;
-    positions.col(2) << -1, 1, 0;
-    positions.col(3) << 1, 1, 0;
-
-    mVoxignProgram.bind();
-    mVoxignProgram.uploadIndices(indices);
-    mVoxignProgram.uploadAttrib("position", positions);
+    mVoxignProgram.init("slicer", shader);
 
     Vector3f vol = volume();
     Vector3f res = mBounds.cast<float>();
@@ -73,9 +60,7 @@ void Voxels::renderLayer(unsigned long layerIndex) {
     float layer = 0.0f;
 
     mVoxignProgram.setUniform("slice", layer);
-
-    glDisable(GL_DEPTH_TEST);
-    mVoxignProgram.drawIndexed(GL_TRIANGLES, 0, 2);
+    mVoxignProgram.draw();
 }
 
 void Voxels::voxelizeLayer(unsigned long layer) {

@@ -46,6 +46,10 @@ std::istream& operator>>(std::istream& is, std::tuple<T, T, T>& tuple) {
 template<typename T>
 Eigen::Matrix<T, 3, 1> castTuple(std::tuple<T, T, T> tuple);
 
+// TODO: this should be replaced by above templated function
+Eigen::Array3f tupleToArray3f(std::tuple<float, float, float> tuple);
+Eigen::Array3i tupleToArray3i(std::tuple<int, int, int> tuple);
+
 
 using std::cout;
 using std::cerr;
