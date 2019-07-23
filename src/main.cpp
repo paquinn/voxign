@@ -61,11 +61,11 @@ int parseArgs(const vector<string> &args) {
         {
             nanogui::ref<Viewer> screen = new Viewer();
 
-//            if (sizeFlag)     { screen->setVoxelSize(tupleToArray3f(get(sizeFlag))); }
-//            if (boundsFlag)   { screen->setBounds(tupleToArray3i(get(boundsFlag))); }
-//            if (volumeFlag)   { screen->setVolume(tupleToArray3f(get(volumeFlag))); }
-//            if (inputFile)    { screen->setInputFile(get(inputFile)); }
-//            if (outputFolder) { screen->setOutputFolder(get(outputFolder)); }
+            if (sizeFlag)     { screen->setVoxelSize(tupleToArray3f(get(sizeFlag))); }
+            if (boundsFlag)   { screen->setBounds(tupleToArray3i(get(boundsFlag))); }
+            if (volumeFlag)   { screen->setVolume(tupleToArray3f(get(volumeFlag))); }
+            if (inputFile)    { screen->setInputFile(get(inputFile)); }
+            if (outputFolder) { screen->setOutputFolder(get(outputFolder)); }
 
             screen->drawAll();
             screen->setVisible(true);

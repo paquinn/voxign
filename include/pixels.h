@@ -9,6 +9,8 @@ public:
     virtual bool init(const std::string &name, const std::string &fragment_str);
     virtual void draw();
 
+    bool ready();
+
 private:
     using nanogui::GLShader::initFromFiles;
     using nanogui::GLShader::drawIndexed;
@@ -16,6 +18,8 @@ private:
 
     static const std::string mVertexShader;
     static const std::string mPositionAttrib;
+
+    bool mReady = false;
 };
 
 #endif //VOXIGN_PIXELS_H
