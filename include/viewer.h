@@ -29,9 +29,6 @@ public:
     void setVolume(Eigen::Array3f volume);
 
 private:
-//    nanogui::GLShader mPreviewMarcherProgram;
-//    nanogui::GLShader mPreviewVoxelProgram;
-//    nanogui::GLShader mPreviewSliceProgram;
 
     std::string mOutputFolder;
     Pixels mRenderProgram;

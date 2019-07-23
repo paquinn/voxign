@@ -5,9 +5,7 @@ Viewer::Viewer() :
         mVoxels(nanogui::Vector3f(1.0, 1.0, 1.0), nanogui::Vector3i(100, 100, 100)),
         mCompiler()
 {
-//    mCompiler.load("basic");
-//    mVoxels.setShader(mCompiler.reload("sliceFramework"));
-//    mRenderProgram.init("render", mCompiler.reload("renderFramework"));
+
 }
 
 void Viewer::setInputFile(const std::string &filename) {

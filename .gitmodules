@@ -7,3 +7,6 @@
 [submodule "ext/nanogui"]
 	path = ext/nanogui
 	url = https://github.com/wjakob/nanogui
+[submodule "ext/args"]
+	path = ext/args
+	url = https://github.com/Taywee/args.git
