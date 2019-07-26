@@ -1,11 +1,38 @@
 #include "viewer.h"
 
+#include <nanogui/window.h>
+#include <nanogui/layout.h>
+#include <nanogui/button.h>
+
 Viewer::Viewer() :
-        nanogui::Screen(nanogui::Vector2i(600, 600), "Voxign", false),
-        mVoxels(nanogui::Vector3f(1.0, 1.0, 1.0), nanogui::Vector3i(100, 100, 100)),
+        // TODO: Change to resizeable back to true
+        nanogui::Screen(nanogui::Vector2i(800, 800), "Voxign", false),
+        mVoxels(),
         mCompiler()
 {
+    using namespace nanogui;
 
+    mToolBar = new Window(this, "Test");
+    mToolBar->setPosition(Vector2i(15, 15));
+    mToolBar->setLayout(new BoxLayout{Orientation::Vertical, Alignment::Fill});
+
+    {
+        Button *voxelize = new Button(mToolBar, "Voxelize");
+        voxelize->setCallback([this]() {
+            tfm::printfln("Voxelizing %s layers", mVoxels.layerCount());
+            for (int i = 0; i < mVoxels.layerCount(); ++i) {
+                cout << "Layer " << i << endl;
+                mVoxels.voxelizeLayer(i);
+            }
+        });
+
+        Button *save = new Button(mToolBar, "Save");
+        save->setCallback([this]() {
+            tfm::printfln("Saving %s layers", mVoxels.layerCount());
+            mVoxels.saveVoxels("test_folder");
+        });
+    }
+    performLayout();
 }
 
 void Viewer::setInputFile(const std::string &filename) {

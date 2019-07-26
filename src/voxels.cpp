@@ -1,19 +1,15 @@
 #include <voxels.h>
 #include <fstream>
 
-Voxels::Voxels(const Array3f &voxelShape, const Array3i &boundShape) {
-//    resizeVoxels(voxelSize);
-//    resizeBounds(boundShape);
+
+Voxels::Voxels() {
+    // TODO: Find better solution to default values
+    resizeBounds({100, 100, 100}, {1.0, 1.0, 1.0});
 }
 
 void Voxels::setShader(const std::string &shader) {
     mVoxignProgram.free();
     mVoxignProgram.init("slicer", shader);
-
-    Vector3f vol = volume();
-    Vector3f res = mBounds.cast<float>();
-    mVoxignProgram.setUniform("resolution", res);
-    mVoxignProgram.setUniform("volume", vol);
 }
 
 void Voxels::resizeBounds(const Array3i &bounds, const Array3f &voxels) {
@@ -43,18 +39,29 @@ void Voxels::clearVoxels() {
 }
 
 void Voxels::renderLayer(unsigned long layerIndex) {
-    if (mVoxignProgram.ready()) {
+    if (ready()) {
         mVoxignProgram.bind();
+        mVoxignProgram.setUniform("slice", float(layerIndex));
 
-        float layer = 0.0f;
-        mVoxignProgram.setUniform("slice", layer);
+        Vector3f vol = volume();
+        Vector3f res = mBounds.cast<float>();
+        mVoxignProgram.setUniform("resolution", res);
+        mVoxignProgram.setUniform("volume", vol);
+
         mVoxignProgram.draw();
+    } else {
+        // TODO: Possibly throw error if trying to render without being ready
     }
 }
 
 void Voxels::voxelizeLayer(unsigned long layer) {
-    if (!ready()) return;
+    if (!ready()) return; // TODO: This should also be an error
+
     auto start = std::chrono::system_clock::now();
+
+    // TODO: Check if thise type of lazy resizing is a benefit over a more proactive approach
+    auto size = layerSize();
+    mVoxels.at(layer).resize(size.coeff(0), size.coeff(1));
 
     mFbo.bind();
     glClearColor(0, 0, 0, 0);
@@ -66,6 +73,8 @@ void Voxels::voxelizeLayer(unsigned long layer) {
     mFbo.bind();
     glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
     glReadPixels(0, 0, layerSize().x(), layerSize().y(), GL_RGB, GL_FLOAT, mVoxels.at(layer).data());
+    // TODO: Maybe change this to always output to a specificfolder
+//    mFbo.downloadTGA(tfm::format("%s_%06d.tga", "download", layer));
     mFbo.release();
 
     mFinishedLayers.at(layer) = true;
@@ -94,6 +103,18 @@ void Voxels::saveLayer(unsigned long layer) {
         mVoxels.at(layer).savePNG(name);
     } else {
         std::cout << "Layer not rendered " << layer << std::endl;
+    }
+}
+
+void Voxels::saveVoxels(const std::string &folder) {
+    if (finishedAll()) {
+        for (int i = 0; i < layerCount(); ++i) {
+            std::string name = tfm::format("%s_%06d.png", folder, i);
+            cout << "Saving: " << name << endl;
+            mVoxels.at(i).savePNG(name);
+        }
+    } else {
+        cout << "Not all layers rendered" << endl;
     }
 }
 

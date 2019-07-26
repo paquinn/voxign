@@ -1,0 +1,4 @@
+#ifndef VOXIGN_PREVIEW_H
+#define VOXIGN_PREVIEW_H
+
+#endif //VOXIGN_PREVIEW_H

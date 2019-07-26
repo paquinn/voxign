@@ -9,17 +9,13 @@
 #include <nanogui/screen.h>
 #include <nanogui/glutil.h>
 
+
 class Viewer : public nanogui::Screen {
 public:
     Viewer();
     ~Viewer();
 
     void drawContents() override;
-
-//    void reloadPython();
-//
-//    void initializeGL();
-//    void initializeLayout();
 
     void setInputFile(const std::string &filename);
     void setOutputFolder(const std::string &foldername);
@@ -33,6 +29,12 @@ private:
     Pixels mRenderProgram;
     Compiler mCompiler;
     Voxels mVoxels;
+
+    std::vector<nanogui::Button*> mNeedsFileButton;
+
+    nanogui::Window *mToolBar;
+    nanogui::Widget *mVoxelPreview;
+    nanogui::Widget *mSlicePreview;
 
 
 };

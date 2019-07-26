@@ -140,5 +140,5 @@ void main()
     tot /= float(AA * AA);
     #endif
 
-    gl_FragColor = vec4(tot, 0);
+    gl_FragColor = vec4(tot, 1.0);
 }

@@ -44,6 +44,7 @@ public:
 
     Layer(const Vector2i &size = Vector2i(0, 0)) : Base(size.x(), size.y()) {}
 
+    // TODO: lodePNG compresses output by default, find way to output uncompressed files
     void savePNG(const std::string &name) {
         std::vector<unsigned char> image;
         image.resize(cols() * rows() * 4);
@@ -57,21 +58,44 @@ public:
         }
 
         unsigned error = lodepng::encode(name, image, cols(), rows());
-
+        cout << "Saving png " << name << endl;
         if(error)
             fprintf(stderr, "Save PNG err: %d: %s\n", error, lodepng_error_text(error));
+    }
+
+    // TODO: This does not work correctly do to expecting bgra format
+    void saveTGA(const std::string &name) {
+        FILE *tga = fopen(name.c_str(), "wb");
+        if (tga == nullptr) {
+            tfm::printfln("File: %s could not be opened", name);
+            return;
+        }
+        fputc(0, tga); /* ID */
+        fputc(0, tga); /* Color map */
+        fputc(2, tga); /* Image type */
+        fputc(0, tga); fputc(0, tga); /* First entry of color map (unused) */
+        fputc(0, tga); fputc(0, tga); /* Length of color map (unused) */
+        fputc(0, tga); /* Color map entry size (unused) */
+        fputc(0, tga); fputc(0, tga);  /* X offset */
+        fputc(0, tga); fputc(0, tga);  /* Y offset */
+        fputc(cols() % 256, tga); /* Width */
+        fputc(cols() / 256, tga); /* continued */
+        fputc(rows() % 256, tga); /* Height */
+        fputc(rows() / 256, tga); /* continued */
+        fputc(32, tga);   /* Bits per pixel */
+        fputc(0x20, tga); /* Scan from top left */
+        fwrite(data(), cols() * rows() * 4, 1, tga);
+        fclose(tga);
     }
 };
 
 class Voxels {
 public:
-    Voxels() {};
-    Voxels(const Array3f &voxelShape, const Array3i &boundShape);
+    Voxels();
     ~Voxels();
 
     void setShader(const std::string &shader);
 
-//    void resizeVoxels(const Array3f &shape);
     void resizeBounds(const Array3i &bounds, const Array3f &voxels);
     void resizeVolume(const Array3f &volume, const Array3f &voxels);
 
@@ -88,7 +112,7 @@ public:
     bool finishedAll();
 
     Array2i layerSize() { return {mBounds.coeff(0), mBounds.coeff(1)}; }
-    unsigned long layerCount() { return mVoxels.size(); }
+    const int layerCount() { return mBounds.coeff(2); }
     Array3f volume() { return mVolume; }
     Array3f voxelSize() { return mVoxelSize; }
     Array3f calcVolume() { return mVoxelSize.cwiseProduct(mBounds.cast<float>()); }
