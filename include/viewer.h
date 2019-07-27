@@ -5,6 +5,7 @@
 #include "voxels.h"
 #include "compiler.h"
 #include "pixels.h"
+#include "preview.h"
 
 #include <nanogui/screen.h>
 #include <nanogui/glutil.h>
@@ -35,6 +36,8 @@ private:
     nanogui::Window *mToolBar;
     nanogui::Widget *mVoxelPreview;
     nanogui::Widget *mSlicePreview;
+
+    Preview *mPreview;
 
 
 };

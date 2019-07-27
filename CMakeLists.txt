@@ -33,7 +33,7 @@ add_executable(voxign
         src/voxels.cpp
         src/compiler.cpp
         src/pixels.cpp
-        include/preview.h)
+        include/preview.h src/preview.cpp)
 
 target_link_libraries(voxign 
     nanogui ${NANOGUI_EXTRA_LIBS} 

@@ -32,6 +32,17 @@ Viewer::Viewer() :
             mVoxels.saveVoxels("test_folder");
         });
     }
+
+    {
+        Window *previewWindow = new Window(this, "Preview");
+        previewWindow->setPosition(Vector2i(15, 15));
+        previewWindow->setLayout(new GroupLayout());
+
+        mPreview = new Preview(previewWindow);
+        mPreview->setBackgroundColor({100, 100, 100, 255});
+        mPreview->setSize({400, 400});
+    }
+
     performLayout();
 }
 
