@@ -78,7 +78,7 @@ int parseArgs(const vector<string> &args) {
 
             screen->drawAll();
             screen->setVisible(true);
-            nanogui::mainloop(100);
+            nanogui::mainloop();
         }
         nanogui::shutdown();
     } catch (const std::exception &e) {
