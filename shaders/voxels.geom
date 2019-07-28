@@ -4,7 +4,7 @@ layout(points) in;
 layout(triangle_strip, max_vertices = 12) out;
 
 uniform mat4 mvp;
-uniform vec3 voxelSize = vec3(0.25);
+uniform vec3 voxelSize;
 uniform vec3 light = normalize(vec3(0.4, -1.0, 0.8));
 
 in vec3 gColor[];

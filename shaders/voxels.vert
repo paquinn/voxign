@@ -1,7 +1,7 @@
 #version 330
 
 uniform mat4 mvp;
-uniform vec3 voxelSize = vec3(0.25);
+uniform vec3 voxelSize;
 
 in vec3 vPosition;
 in vec3 vColor;
