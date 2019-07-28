@@ -85,14 +85,15 @@ void Preview::setVoxels(Voxels *pVoxels) {
     for (int z = 0; z < layers; ++z) {
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
-//                if (isSolid(mVoxels->index(x, y, z))) {
-                    int index = width * (height * z + y) + x;
-                    positions.col(index) << x, y, z;
-                    colors.col(index) << 0.9, 0.8, 0.7;
-                    faces.col(index) << 0xffffff;
-                    tfm::printfln("%s, %s, %s", x, y, z);
+                if (isSolid(mVoxels->index(x, y, z))) {
+//                    int index = width * (height * z + y) + x;
+//                    positions.col(solidCount) << x, y, z;
+                    positions.col(solidCount) << z - layers/2, y - height/2, x - width/2;
+                    colors.col(solidCount) << 1.0, 1.0, 1.0;
+                    faces.col(solidCount) << 0xffffff;
+//                    tfm::printfln("%s, %s, %s", x, y, z);
                     solidCount++;
-//                }
+                }
 //                int index = length * (length * z + y) + x;
 //                positions.col(index) << z - length/2, y - length/2, x - length/2;
 //                colors.col(index) << 0.6, 0.7, 0.8;
@@ -102,6 +103,7 @@ void Preview::setVoxels(Voxels *pVoxels) {
         }
     }
 
+    mShaderVoxels.bind();
     mShaderVoxels.uploadAttrib("vPosition", positions);
     mShaderVoxels.uploadAttrib("vColor", colors);
     mShaderVoxels.uploadAttrib("vFaces", faces);
@@ -145,7 +147,7 @@ void Preview::drawGL() {
 ////            }
 ////        }
 //    }
-        cout << mSolidCount << endl;
+//        cout << mSolidCount << endl;
         mShaderVoxels.drawArray(GL_POINTS, 0, mSolidCount);
         glDisable(GL_DEPTH_TEST);
     }
@@ -153,6 +155,27 @@ void Preview::drawGL() {
 
 bool Preview::isSolid(RGB voxel) {
     return voxel.isApprox(mEmpty);
+}
+
+void Preview::printVoxels() {
+    int layers = mVoxels->layerCount();
+    Array2i size = mVoxels->layerSize();
+    int width = size.coeff(0);
+    int height = size.coeff(1);
+    
+    for (int z = 0; z < layers; ++z) {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+                if (mVoxels->index(x, y, z).r() < 0.5) {
+                    cout << "X";
+                } else {
+                    cout << "O";
+                }
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
 }
 
 Preview::~Preview() {

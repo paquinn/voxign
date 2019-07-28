@@ -19,6 +19,7 @@ public:
 
 private:
     bool isSolid(RGB voxel);
+    void printVoxels();
 
     Voxels *mVoxels;
     int mStart;
