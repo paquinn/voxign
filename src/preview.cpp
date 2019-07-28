@@ -12,23 +12,23 @@ Preview::Preview(Widget *parent)
 
 //    MatrixXf faceIdxs(1, 6);
 //    MatrixXu indices(3, 1);
-    int length = 10;
-    int size = length * length * length;
-    MatrixXf positions(3, size);
-    MatrixXf colors(3, size);
-    MatrixXu faces(1, size);
-
-    for (int z = 0; z < length; ++z) {
-        for (int y = 0; y < length; ++y) {
-            for (int x = 0; x < length; ++x) {
-                int index = length * (length * z + y) + x;
-                positions.col(index) << z - length/2, y - length/2, x - length/2;
-                colors.col(index) << 0.6, 0.7, 0.8;
-//                colors.col(index) << float(z) / length, float(y) / length, float(x) / length;
-                faces.col(index) << 0xffffff;
-            }
-        }
-    }
+//    int length = 10;
+//    int size = length * length * length;
+//    MatrixXf positions(3, size);
+//    MatrixXf colors(3, size);
+//    MatrixXu faces(1, size);
+//
+//    for (int z = 0; z < length; ++z) {
+//        for (int y = 0; y < length; ++y) {
+//            for (int x = 0; x < length; ++x) {
+//                int index = length * (length * z + y) + x;
+//                positions.col(index) << z - length/2, y - length/2, x - length/2;
+//                colors.col(index) << 0.6, 0.7, 0.8;
+////                colors.col(index) << float(z) / length, float(y) / length, float(x) / length;
+//                faces.col(index) << 0xffffff;
+//            }
+//        }
+//    }
 
 ////    indices.col(0) << 0, 1, 2;
 //
@@ -51,30 +51,89 @@ Preview::Preview(Widget *parent)
 //    faces.col(0) << 0xffffff;
 //    faces.col(1) << 0xffffff;
 
-    mShaderVoxels.bind();
-//    mShaderVoxels.uploadIndices(indices);
-    mShaderVoxels.uploadAttrib("vPosition", positions);
-    mShaderVoxels.uploadAttrib("vColor", colors);
-    mShaderVoxels.uploadAttrib("vFaces", faces);
-    mShaderVoxels.setUniform("bounds", Vector3f{length, length, length});
-
+//    mShaderVoxels.bind();
+////    mShaderVoxels.uploadIndices(indices);
+//    mShaderVoxels.uploadAttrib("vPosition", positions);
+//    mShaderVoxels.uploadAttrib("vColor", colors);
+//    mShaderVoxels.uploadAttrib("vFaces", faces);
+//    mShaderVoxels.setUniform("bounds", Vector3f{length, length, length});
 //    mShaderVoxels.uploadAttrib("vFaceIdx", faceIdxs);
 }
 
+void Preview::setVoxels(Voxels *pVoxels) {
+    // TODO: Might not be needed
+//    if (mShaderVoxels.hasAttrib("vPosition")) {
+//        mShaderVoxels.freeAttrib("vPosition");
+//        mShaderVoxels.freeAttrib("vColor");
+//        mShaderVoxels.freeAttrib("vFaces");
+//    }
+
+    mVoxels = pVoxels;
+    setViewInterval(0, mVoxels->layerCount());
+    setLayer(0.0);
+
+    int voxelCount = mVoxels->layerCount() * mVoxels->layerSize().prod();
+    MatrixXf positions(3, voxelCount);
+    MatrixXf colors(3, voxelCount);
+    MatrixXu faces(1, voxelCount);
+    int solidCount = 0;
+    int layers = mVoxels->layerCount();
+    Array2i size = mVoxels->layerSize();
+    int width = size.coeff(0);
+    int height = size.coeff(1);
+
+    for (int z = 0; z < layers; ++z) {
+        for (int y = 0; y < height; ++y) {
+            for (int x = 0; x < width; ++x) {
+//                if (isSolid(mVoxels->index(x, y, z))) {
+                    int index = width * (height * z + y) + x;
+                    positions.col(index) << x, y, z;
+                    colors.col(index) << 0.9, 0.8, 0.7;
+                    faces.col(index) << 0xffffff;
+                    tfm::printfln("%s, %s, %s", x, y, z);
+                    solidCount++;
+//                }
+//                int index = length * (length * z + y) + x;
+//                positions.col(index) << z - length/2, y - length/2, x - length/2;
+//                colors.col(index) << 0.6, 0.7, 0.8;
+////                colors.col(index) << float(z) / length, float(y) / length, float(x) / length;
+//                faces.col(index) << 0xffffff;
+            }
+        }
+    }
+
+    mShaderVoxels.uploadAttrib("vPosition", positions);
+    mShaderVoxels.uploadAttrib("vColor", colors);
+    mShaderVoxels.uploadAttrib("vFaces", faces);
+    mSolidCount = solidCount;
+
+    tfm::printfln("Solid count: %s/%s", solidCount, voxelCount);
+    mReady = true;
+}
+
+void Preview::setLayer(float layer) {
+    mLayer = layer;
+}
+
+void Preview::setViewInterval(int start, int end) {
+    mStart = start;
+    mEnd = end;
+}
+
 void Preview::drawGL() {
-    mShaderVoxels.bind();
+    if (mReady) {
+        mShaderVoxels.bind();
 
-    Matrix4f mvp;
-    mvp.setIdentity();
-    float fTime = (float)glfwGetTime();
-    mvp.topLeftCorner<3,3>() = Eigen::Matrix3f(Eigen::AngleAxisf(mRotation[0]*fTime, Vector3f::UnitX()) *
-                                               Eigen::AngleAxisf(mRotation[1]*fTime,  Vector3f::UnitY()) *
-                                               Eigen::AngleAxisf(mRotation[2]*fTime, Vector3f::UnitZ())) * 0.25f;
+        Matrix4f mvp;
+        mvp.setIdentity();
+        float fTime = (float) glfwGetTime();
+        mvp.topLeftCorner<3, 3>() = Eigen::Matrix3f(Eigen::AngleAxisf(mRotation[0] * fTime, Vector3f::UnitX()) *
+                                                    Eigen::AngleAxisf(mRotation[1] * fTime, Vector3f::UnitY()) *
+                                                    Eigen::AngleAxisf(mRotation[2] * fTime, Vector3f::UnitZ())) * 0.25f;
 
-    mShaderVoxels.setUniform("mvp", mvp);
+        mShaderVoxels.setUniform("mvp", mvp);
 
-
-    glEnable(GL_DEPTH_TEST);
+        glEnable(GL_DEPTH_TEST);
 //    mShaderVoxels.drawIndexed(GL_TRIANGLES, 0, 1);
 //    mShaderVoxels.drawArray(GL_POINTS, 0, 1);
 //    fTime = (float)glfwGetTime();
@@ -86,12 +145,14 @@ void Preview::drawGL() {
 ////            }
 ////        }
 //    }
-    mShaderVoxels.drawArray(GL_POINTS, 0, 10 * 10 * 10);
-//    cout << fTime - (float)glfwGetTime()  << endl;
-//    int i1 = 100 * (100 * 0 + 0) + 0;
-//    int i2 = 100 * (100 * 5 + 5) + 5;
-//    int i3 = 100 * (100 * 3 + 3) + 3;
-    glDisable(GL_DEPTH_TEST);
+        cout << mSolidCount << endl;
+        mShaderVoxels.drawArray(GL_POINTS, 0, mSolidCount);
+        glDisable(GL_DEPTH_TEST);
+    }
+}
+
+bool Preview::isSolid(RGB voxel) {
+    return voxel.isApprox(mEmpty);
 }
 
 Preview::~Preview() {

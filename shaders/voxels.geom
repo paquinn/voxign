@@ -5,7 +5,6 @@ layout(triangle_strip, max_vertices = 12) out;
 
 uniform mat4 mvp;
 uniform vec3 voxelSize = vec3(0.5);
-uniform vec3 bounds;
 uniform vec3 light = normalize(vec3(0.4, -1.0, 0.8));
 
 in vec3 gColor[];

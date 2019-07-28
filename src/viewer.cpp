@@ -20,10 +20,14 @@ Viewer::Viewer() :
         Button *voxelize = new Button(mToolBar, "Voxelize");
         voxelize->setCallback([this]() {
             tfm::printfln("Voxelizing %s layers", mVoxels.layerCount());
-            for (int i = 0; i < mVoxels.layerCount(); ++i) {
-                cout << "Layer " << i << endl;
-                mVoxels.voxelizeLayer(i);
-            }
+//            for (int i = 0; i < mVoxels.layerCount(); ++i) {
+//                cout << "Layer " << i << endl;
+//                mVoxels.voxelizeLayer(i);
+//            }
+            mVoxels.voxelizeLayers(100000);
+            mPreview->setVoxels(&mVoxels);
+//            cout << mVoxels.index(0, 0, 0).toString() << endl;
+//            cout << mVoxels.index(50, 50, 50).toString() << endl;
         });
 
         Button *save = new Button(mToolBar, "Save");

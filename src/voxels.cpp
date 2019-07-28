@@ -36,6 +36,7 @@ void Voxels::clearVoxels() {
     for (auto it = mFinishedLayers.begin(); it < mFinishedLayers.end(); it++) {
         *it = false;
     }
+    mNumFinished = 0;
 }
 
 void Voxels::renderLayer(unsigned long layerIndex) {
@@ -54,30 +55,45 @@ void Voxels::renderLayer(unsigned long layerIndex) {
     }
 }
 
-void Voxels::voxelizeLayer(unsigned long layer) {
+void Voxels::voxelizeLayer() {
+//    assert(layer == mNumFinished);
     if (!ready()) return; // TODO: This should also be an error
 
     auto start = std::chrono::system_clock::now();
 
     // TODO: Check if thise type of lazy resizing is a benefit over a more proactive approach
     auto size = layerSize();
-    mVoxels.at(layer).resize(size.coeff(0), size.coeff(1));
+    mVoxels.at(mNumFinished).resize(size.coeff(0), size.coeff(1));
 
     mFbo.bind();
     glClearColor(0, 0, 0, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    renderLayer(layer);
+    renderLayer(mNumFinished);
     mFbo.release();
 
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     mFbo.bind();
     glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-    glReadPixels(0, 0, layerSize().x(), layerSize().y(), GL_RGB, GL_FLOAT, mVoxels.at(layer).data());
+    glReadPixels(0, 0, layerSize().coeff(0), layerSize().coeff(1), GL_RGB, GL_FLOAT, mVoxels.at(mNumFinished).data());
     // TODO: Maybe change this to always output to a specificfolder
-//    mFbo.downloadTGA(tfm::format("%s_%06d.tga", "download", layer));
+//    mFbo.downloadTGA(tfm::format("%s_%06d.tga", "download", mNumFinished));
     mFbo.release();
 
-    mFinishedLayers.at(layer) = true;
+    mFinishedLayers.at(mNumFinished) = true;
+    mNumFinished += 1;
+}
+
+bool Voxels::voxelizeLayers(int count) {
+    if (finished()) {
+        return false;
+    } else {
+        for (int i = 0; i < count && !finished(); ++i) {
+            voxelizeLayer();
+            cout << "voxelizing layer " << i << endl;
+        }
+        // TODO: This should only return true once when it has finished
+        return finished();
+    }
 }
 
 // Make sure these always happen together
@@ -86,19 +102,20 @@ void Voxels::resizeLayers(unsigned long layers) {
     mFinishedLayers.resize(layers);
 }
 
-bool Voxels::finished(unsigned long layer) {
+bool Voxels::finishedLayer(unsigned long layer) {
     return mFinishedLayers.at(layer);
 }
 
-bool Voxels::finishedAll() {
-    for (bool finished : mFinishedLayers) {
-        if (!finished) return false;
-    }
-    return true;
+bool Voxels::finished() {
+    return mNumFinished == layerCount();
+}
+
+int Voxels::progress() {
+    return mNumFinished;
 }
 
 void Voxels::saveLayer(unsigned long layer) {
-    if (finished(layer)) {
+    if (finishedLayer(layer)) {
         std::string name = tfm::format("%06d.png", layer);
         mVoxels.at(layer).savePNG(name);
     } else {
@@ -107,7 +124,7 @@ void Voxels::saveLayer(unsigned long layer) {
 }
 
 void Voxels::saveVoxels(const std::string &folder) {
-    if (finishedAll()) {
+    if (finished()) {
         for (int i = 0; i < layerCount(); ++i) {
             std::string name = tfm::format("%s_%06d.png", folder, i);
             cout << "Saving: " << name << endl;
@@ -115,6 +132,16 @@ void Voxels::saveVoxels(const std::string &folder) {
         }
     } else {
         cout << "Not all layers rendered" << endl;
+    }
+}
+
+RGB Voxels::index(int x, int y, int z) {
+    if (z < 0 || z >= layerCount() ||
+            x < 0 || x >= layerSize().coeff(0) ||
+            y < 0 || y >= layerSize().coeff(1)) {
+        return {0.0};
+    } else {
+        return mVoxels.at(z)(x, y);
     }
 }
 
@@ -132,10 +159,10 @@ Voxels::~Voxels() {
 //    v.resizeBounds(Array3i(10, 10, 5));
 //    v.voxelizeLayer(1);
 //    v.voxelizeLayer(3);
-//    assert(v.finished(2) == false);
-//    assert(v.finished(1) == true);
+//    assert(v.finishedLayer(2) == false);
+//    assert(v.finishedLayer(1) == true);
 //    v.clearVoxels();
-//    assert(v.finished(3) == false);
+//    assert(v.finishedLayer(3) == false);
 //}
 //
 //void test_finishedAll() {
@@ -143,14 +170,14 @@ Voxels::~Voxels() {
 //
 //    v.resizeBounds(Array3i(5,5,3));
 //
-//    assert(v.finishedAll() == false);
+//    assert(v.finished() == false);
 //    v.voxelizeLayer(0);
-//    assert(v.finishedAll() == false);
+//    assert(v.finished() == false);
 //    v.voxelizeLayer(1);
 //    v.voxelizeLayer(2);
-//    assert(v.finishedAll() == true);
+//    assert(v.finished() == true);
 //    v.clearVoxels();
-//    assert(v.finishedAll() == false);
+//    assert(v.finished() == false);
 //}
 //
 //void test_resizeVolume() {

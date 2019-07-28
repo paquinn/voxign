@@ -103,21 +103,26 @@ public:
 
     void clearVoxels();
 
-    void renderLayer(unsigned long layer);
-    void voxelizeLayer(unsigned long layer);
-    void saveLayer(unsigned long layer);
+    bool voxelizeLayers(int count);
     void saveVoxels(const std::string &folder);
-
-    bool finished(unsigned long layer);
-    bool finishedAll();
+    bool finished();
+    int progress();
 
     Array2i layerSize() { return {mBounds.coeff(0), mBounds.coeff(1)}; }
     const int layerCount() { return mBounds.coeff(2); }
+
     Array3f volume() { return mVolume; }
     Array3f voxelSize() { return mVoxelSize; }
     Array3f calcVolume() { return mVoxelSize.cwiseProduct(mBounds.cast<float>()); }
     Array3i calcBounds() { return mVolume.cwiseQuotient(mVoxelSize).ceil().cast<int>(); }
+
+    RGB index(int x, int y, int z);
 private:
+    bool finishedLayer(unsigned long layer);
+    void renderLayer(unsigned long layer);
+    void voxelizeLayer();
+    void saveLayer(unsigned long layer);
+
     void resizeLayers(unsigned long layers);
 
     Array3f mVolume;
@@ -126,7 +131,7 @@ private:
 
     std::vector<Layer> mVoxels;
     std::vector<bool> mFinishedLayers;
-    bool mFinished;
+    int mNumFinished;
 
     nanogui::GLFramebuffer mFbo;
     Pixels mVoxignProgram;
