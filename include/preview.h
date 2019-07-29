@@ -35,6 +35,7 @@ private:
     Eigen::Vector3f mRotation;
 
     bool mReady = false;
+    bool mWireframe = true;
 
     const RGB mEmpty = RGB(0.0);
 };

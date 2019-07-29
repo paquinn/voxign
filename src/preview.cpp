@@ -9,15 +9,18 @@ Preview::Preview(Widget *parent)
                                 "shaders/voxels.vert",
                                 "shaders/voxels.frag",
                                 "shaders/voxels.geom");
+    mShaderBounds.initFromFiles("bounds",
+                                "shaders/bounds.vert",
+                                "shaders/voxels.frag");
 }
 
 void Preview::setVoxels(Voxels *pVoxels) {
     // TODO: Might not be needed
-    if (mShaderVoxels.hasAttrib("vPosition")) {
-        mShaderVoxels.freeAttrib("vPosition");
-        mShaderVoxels.freeAttrib("vColor");
-        mShaderVoxels.freeAttrib("vFaces");
-    }
+//    if (mShaderVoxels.hasAttrib("vPosition")) {
+//        mShaderVoxels.freeAttrib("vPosition");
+//        mShaderVoxels.freeAttrib("vColor");
+//        mShaderVoxels.freeAttrib("vFaces");
+//    }
 
     mVoxels = pVoxels;
     setViewInterval(0, mVoxels->layerCount());
@@ -75,6 +78,60 @@ void Preview::setVoxels(Voxels *pVoxels) {
 
     tfm::printfln("Solid count: %s/%s", solidCount, voxelCount);
     tfm::printfln("Inside count: %s/%s", insideCount, voxelCount);
+
+    mShaderBounds.bind();
+    MatrixXf boundPositions(3, 8);
+    float dx = mVoxels->volume().coeff(0) / 2.0f;
+    float dy = mVoxels->volume().coeff(1) / 2.0f;
+    float dz = mVoxels->volume().coeff(2) / 2.0f;
+    tfm::printfln("Size %s %s %s", dx, dy, dz);
+//    boundPositions.col(0) << -dx, -dy, -dz;
+//    boundPositions.col(1) << dx, -dy, -dz;
+//    boundPositions.col(2) << -dx, dy, -dz;
+//    boundPositions.col(3) << -dx, -dy, dz;
+//    boundPositions.col(4) << dx, dy, -dz;
+//    boundPositions.col(5) << dx, -dy, dz;
+//    boundPositions.col(6) << -dx, dy, dz;
+//    boundPositions.col(7) << dx, dy, dz;
+//    MatrixXu indices(2, 12);
+//    indices.col( 0) << 0, 1;
+//    indices.col( 1) << 0, 2;
+//    indices.col( 2) << 0, 3;
+//    indices.col( 3) << 1, 6;
+//    indices.col( 4) << 6, 2;
+//    indices.col( 5) << 2, 4;
+//    indices.col( 6) << 4, 3;
+//    indices.col( 7) << 3, 5;
+//    indices.col( 8) << 5, 1;
+//    indices.col( 9) << 5, 7;
+//    indices.col(10) << 4, 7;
+//    indices.col(11) << 6, 7;
+
+    MatrixXu indices(3, 12); /* Draw a cube */
+    indices.col( 0) << 0, 1, 3;
+    indices.col( 1) << 3, 2, 1;
+    indices.col( 2) << 3, 2, 6;
+    indices.col( 3) << 6, 7, 3;
+    indices.col( 4) << 7, 6, 5;
+    indices.col( 5) << 5, 4, 7;
+    indices.col( 6) << 4, 5, 1;
+    indices.col( 7) << 1, 0, 4;
+    indices.col( 8) << 4, 0, 3;
+    indices.col( 9) << 3, 7, 4;
+    indices.col(10) << 5, 6, 2;
+    indices.col(11) << 2, 1, 5;
+
+    boundPositions.col(0) << -dx,  dy,  dz;
+    boundPositions.col(1) << -dx,  dy, -dz;
+    boundPositions.col(2) <<  dx,  dy, -dz;
+    boundPositions.col(3) <<  dx,  dy,  dz;
+    boundPositions.col(4) << -dx, -dy,  dz;
+    boundPositions.col(5) << -dx, -dy, -dz;
+    boundPositions.col(6) <<  dx, -dy, -dz;
+    boundPositions.col(7) <<  dx, -dy,  dz;
+
+    mShaderBounds.uploadIndices(indices);
+    mShaderBounds.uploadAttrib("vPosition", boundPositions);
     mReady = true;
 }
 
@@ -89,7 +146,8 @@ void Preview::setViewInterval(int start, int end) {
 
 void Preview::drawGL() {
     if (mReady) {
-        mShaderVoxels.bind();
+        if (mWireframe) { glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); }
+        glEnable(GL_DEPTH_TEST);
 
         Matrix4f mvp;
         mvp.setIdentity();
@@ -98,11 +156,16 @@ void Preview::drawGL() {
                                                     Eigen::AngleAxisf(mRotation[1] * fTime, Vector3f::UnitY()) *
                                                     Eigen::AngleAxisf(mRotation[2] * fTime, Vector3f::UnitZ())) * 0.25f;
 
+        mShaderVoxels.bind();
         mShaderVoxels.setUniform("mvp", mvp);
-
-        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-        glEnable(GL_DEPTH_TEST);
         mShaderVoxels.drawArray(GL_POINTS, 0, mSolidCount - mInsideCount);
+
+        if (!mWireframe) { glPolygonMode( GL_FRONT_AND_BACK, GL_LINE ); }
+
+        mShaderBounds.bind();
+        mShaderBounds.setUniform("mvp", mvp);
+        mShaderBounds.drawIndexed(GL_TRIANGLES, 0, 12);
+
         glDisable(GL_DEPTH_TEST);
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 
