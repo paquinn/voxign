@@ -26,6 +26,7 @@ private:
     int mEnd;
     float mLayer;
     int mSolidCount;
+    int mInsideCount;
 
     nanogui::GLShader mShaderVoxels;
     nanogui::GLShader mShaderBounds;

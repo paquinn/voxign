@@ -26,8 +26,10 @@ void Preview::setVoxels(Voxels *pVoxels) {
     int voxelCount = mVoxels->layerCount() * mVoxels->layerSize().prod();
     MatrixXf positions(3, voxelCount);
     MatrixXf colors(3, voxelCount);
-    MatrixXu faces(1, voxelCount);
+    // TODO: BUG: Sending ints directly over causes their bits to be converted to float along the way
+    MatrixXf faces(1, voxelCount);
     int solidCount = 0;
+    int insideCount = 0;
     int layers = mVoxels->layerCount();
     Array2i size = mVoxels->layerSize();
     int width = size.coeff(0);
@@ -37,24 +39,42 @@ void Preview::setVoxels(Voxels *pVoxels) {
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
                 if (isSolid(mVoxels->index(x, y, z))) {
-                    positions.col(solidCount) << z - layers/2, y - height/2, x - width/2;
-                    colors.col(solidCount) << 1.0, 1.0, 1.0;
-                    faces.col(solidCount) << 0xffffff;
+                    int sides = 0;
+                    sides |= isSolid(mVoxels->index(x + 1, y, z)) << 0;
+                    sides |= isSolid(mVoxels->index(x - 1, y, z)) << 1;
+                    sides |= isSolid(mVoxels->index(x, y + 1, z)) << 2;
+                    sides |= isSolid(mVoxels->index(x, y - 1, z)) << 3;
+                    sides |= isSolid(mVoxels->index(x, y, z + 1)) << 4;
+                    sides |= isSolid(mVoxels->index(x, y, z - 1)) << 5;
+                    if (sides == 0b111111) {
+                        insideCount++;
+                    } else {
+                        int index = solidCount - insideCount;
+                        positions.col(index) << x - layers/2, y - height/2, z - width/2;
+                        colors.col(index) << 1.0, 1.0, 1.0;
+                        faces.col(index) << sides;
+                    }
+
                     solidCount++;
                 }
             }
         }
     }
 
+    // TODO: Resize these matrix arrays before sending them to the gpu
+    // TODO: Or consider adding them to a vector and then creating the matrix from .data()
     mShaderVoxels.bind();
+
     mShaderVoxels.uploadAttrib("vPosition", positions);
     mShaderVoxels.uploadAttrib("vColor", colors);
     mShaderVoxels.uploadAttrib("vFaces", faces);
     Vector3f voxelSize = mVoxels->voxelSize();
     mShaderVoxels.setUniform("voxelSize", voxelSize);
     mSolidCount = solidCount;
+    mInsideCount = insideCount;
 
     tfm::printfln("Solid count: %s/%s", solidCount, voxelCount);
+    tfm::printfln("Inside count: %s/%s", insideCount, voxelCount);
     mReady = true;
 }
 
@@ -80,9 +100,12 @@ void Preview::drawGL() {
 
         mShaderVoxels.setUniform("mvp", mvp);
 
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
         glEnable(GL_DEPTH_TEST);
-        mShaderVoxels.drawArray(GL_POINTS, 0, mSolidCount);
+        mShaderVoxels.drawArray(GL_POINTS, 0, mSolidCount - mInsideCount);
         glDisable(GL_DEPTH_TEST);
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+
     }
 }
 

@@ -3,15 +3,16 @@
 uniform mat4 mvp;
 uniform vec3 voxelSize;
 
-in vec3 vPosition;
-in vec3 vColor;
-in int vFaces;
+attribute vec3 vPosition;
+attribute vec3 vColor;
+attribute float vFaces;
 
-out vec3 gColor;
-out int gFaces;
+flat out lowp vec3 gColor;
+flat out int gFaces;
 
 void main() {
     gl_Position = mvp * vec4(vPosition * voxelSize, 1.0);
-    gFaces = vFaces;
+    // TODO: BUG: Currently a hack to fix issue with MatrixXi not being sent correctly
+    gFaces = int(vFaces);
     gColor = vColor;
 }
