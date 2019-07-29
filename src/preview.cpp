@@ -6,12 +6,12 @@ using namespace nanogui;
 Preview::Preview(Widget *parent)
 : GLCanvas(parent), mRotation(nanogui::Vector3f(0.25f, 0.5f, 0.33f)) {
     mShaderVoxels.initFromFiles("voxels",
-                                "shaders/voxels.vert",
-                                "shaders/voxels.frag",
-                                "shaders/voxels.geom");
+                                DATA_DIR"/shaders/voxels.vert",
+                                DATA_DIR"/shaders/voxels.frag",
+                                DATA_DIR"/shaders/voxels.geom");
     mShaderBounds.initFromFiles("bounds",
-                                "shaders/bounds.vert",
-                                "shaders/voxels.frag");
+                                DATA_DIR"/shaders/bounds.vert",
+                                DATA_DIR"/shaders/voxels.frag");
 }
 
 void Preview::setVoxels(Voxels *pVoxels) {
@@ -168,7 +168,6 @@ void Preview::drawGL() {
 
         glDisable(GL_DEPTH_TEST);
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
     }
 }
 

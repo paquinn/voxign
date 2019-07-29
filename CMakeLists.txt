@@ -17,7 +17,9 @@ include_directories(ext/lodepng/lodepng/include)
 include_directories(ext/tinyformat)
 include_directories(ext/args)
 
-set(VOXIGN_DEFINITIONS -DVOXIGN_VERSION="${VOXIGN_VERSION}")
+set(VOXIGN_DEFINITIONS
+        -DVOXIGN_VERSION="${VOXIGN_VERSION}"
+        -DDATA_DIR="${PROJECT_SOURCE_DIR}")
 add_definitions(${VOXIGN_DEFINITIONS} ${NANOGUI_EXTRA_DEFS})
 
 add_executable(voxign
@@ -33,7 +35,7 @@ add_executable(voxign
         src/voxels.cpp
         src/compiler.cpp
         src/pixels.cpp
-        include/preview.h src/preview.cpp)
+        include/preview.h src/preview.cpp include/camera.h include/trackball.h include/render.h)
 
 target_link_libraries(voxign 
     nanogui ${NANOGUI_EXTRA_LIBS} 

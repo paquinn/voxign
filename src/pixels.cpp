@@ -44,5 +44,5 @@ bool Pixels::ready() {
     return mReady;
 }
 
-const std::string Pixels::mVertexShader = "shaders/pass.glsl";
+const std::string Pixels::mVertexShader = DATA_DIR"/shaders/pass.glsl";
 const std::string Pixels::mPositionAttrib = "positions";

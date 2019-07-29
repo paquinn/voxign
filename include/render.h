@@ -1,0 +1,4 @@
+#ifndef VOXIGN_RENDER_H
+#define VOXIGN_RENDER_H
+
+#endif //VOXIGN_RENDER_H

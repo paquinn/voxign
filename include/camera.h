@@ -1,0 +1,4 @@
+#ifndef VOXIGN_CAMERA_H
+#define VOXIGN_CAMERA_H
+
+#endif //VOXIGN_CAMERA_H
