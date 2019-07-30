@@ -27,7 +27,7 @@ void main()
 
     // Check if we're inside an object
     float t = DE(p);
-    float col = t > 0 ? 1.0 : 0.0;
+    float col = t < 0.0 ? 1.0 : 0.0;
 
     gl_FragColor = vec4(vec3(col), 1.0);
 

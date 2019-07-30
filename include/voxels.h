@@ -9,6 +9,7 @@
 
 using namespace Eigen;
 
+// TODO: Change or add RGBA, pass voxel information in alpha channel
 struct RGB : public Array3f {
 public:
     typedef Array3f Base;
@@ -38,6 +39,7 @@ public:
     }
 };
 
+// TODO: Make generic to allow for RGBA or single BIT
 class Layer : public Array<RGB, Dynamic, Dynamic, RowMajor> {
 public:
     typedef Array<RGB, Dynamic, Dynamic, RowMajor> Base;

@@ -184,7 +184,7 @@ void Preview::drawGL() {
 }
 
 bool Preview::isSolid(RGB voxel) {
-    return voxel.isApprox(mEmpty);
+    return !voxel.isApprox(mEmpty);
 }
 
 void Preview::printVoxels() {
