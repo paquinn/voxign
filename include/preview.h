@@ -13,7 +13,6 @@ public:
 
     void setVoxels(Voxels *voxels);
     void setLayer(float layer);
-    void setViewInterval(int start, int end);
 
     void drawGL() override;
 
@@ -22,20 +21,19 @@ private:
     void printVoxels();
 
     Voxels *mVoxels;
-    int mStart;
-    int mEnd;
     float mLayer;
     int mSolidCount;
     int mInsideCount;
 
     nanogui::GLShader mShaderVoxels;
     nanogui::GLShader mShaderBounds;
+    nanogui::GLShader mShaderAxis;
     nanogui::GLShader mShaderLayer;
 
     Eigen::Vector3f mRotation;
 
     bool mReady = false;
-    bool mWireframe = true;
+    bool mWireframe = false;
 
     const RGB mEmpty = RGB(0.0);
 };

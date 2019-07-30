@@ -12,6 +12,9 @@ Preview::Preview(Widget *parent)
     mShaderBounds.initFromFiles("bounds",
                                 DATA_DIR"/shaders/bounds.vert",
                                 DATA_DIR"/shaders/voxels.frag");
+    mShaderAxis.initFromFiles("axis",
+                              DATA_DIR"/shaders/bounds.vert",
+                              DATA_DIR"/shaders/voxels.frag");
 }
 
 void Preview::setVoxels(Voxels *pVoxels) {
@@ -23,7 +26,6 @@ void Preview::setVoxels(Voxels *pVoxels) {
 //    }
 
     mVoxels = pVoxels;
-    setViewInterval(0, mVoxels->layerCount());
     setLayer(0.0);
 
     int voxelCount = mVoxels->layerCount() * mVoxels->layerSize().prod();
@@ -67,60 +69,38 @@ void Preview::setVoxels(Voxels *pVoxels) {
     // TODO: Resize these matrix arrays before sending them to the gpu
     // TODO: Or consider adding them to a vector and then creating the matrix from .data()
     mShaderVoxels.bind();
-
     mShaderVoxels.uploadAttrib("vPosition", positions);
     mShaderVoxels.uploadAttrib("vColor", colors);
     mShaderVoxels.uploadAttrib("vFaces", faces);
     Vector3f voxelSize = mVoxels->voxelSize();
     mShaderVoxels.setUniform("voxelSize", voxelSize);
 //    mShaderVoxels.setUniform("voxelSize", Vector3f{1.0, 1.0, 1.0});
+
     mSolidCount = solidCount;
     mInsideCount = insideCount;
 
     tfm::printfln("Solid count: %s/%s", solidCount, voxelCount);
     tfm::printfln("Inside count: %s/%s", insideCount, voxelCount);
 
-    mShaderBounds.bind();
+
+    MatrixXu boundIndices(3, 12); /* Draw a cube */
+    boundIndices.col( 0) << 0, 1, 3;
+    boundIndices.col( 1) << 3, 2, 1;
+    boundIndices.col( 2) << 3, 2, 6;
+    boundIndices.col( 3) << 6, 7, 3;
+    boundIndices.col( 4) << 7, 6, 5;
+    boundIndices.col( 5) << 5, 4, 7;
+    boundIndices.col( 6) << 4, 5, 1;
+    boundIndices.col( 7) << 1, 0, 4;
+    boundIndices.col( 8) << 4, 0, 3;
+    boundIndices.col( 9) << 3, 7, 4;
+    boundIndices.col(10) << 5, 6, 2;
+    boundIndices.col(11) << 2, 1, 5;
+
     MatrixXf boundPositions(3, 8);
     float dx = mVoxels->volume().coeff(0) / 2.0f;
     float dy = mVoxels->volume().coeff(1) / 2.0f;
     float dz = mVoxels->volume().coeff(2) / 2.0f;
-//    boundPositions.col(0) << -dx, -dy, -dz;
-//    boundPositions.col(1) << dx, -dy, -dz;
-//    boundPositions.col(2) << -dx, dy, -dz;
-//    boundPositions.col(3) << -dx, -dy, dz;
-//    boundPositions.col(4) << dx, dy, -dz;
-//    boundPositions.col(5) << dx, -dy, dz;
-//    boundPositions.col(6) << -dx, dy, dz;
-//    boundPositions.col(7) << dx, dy, dz;
-//    MatrixXu indices(2, 12);
-//    indices.col( 0) << 0, 1;
-//    indices.col( 1) << 0, 2;
-//    indices.col( 2) << 0, 3;
-//    indices.col( 3) << 1, 6;
-//    indices.col( 4) << 6, 2;
-//    indices.col( 5) << 2, 4;
-//    indices.col( 6) << 4, 3;
-//    indices.col( 7) << 3, 5;
-//    indices.col( 8) << 5, 1;
-//    indices.col( 9) << 5, 7;
-//    indices.col(10) << 4, 7;
-//    indices.col(11) << 6, 7;
-
-    MatrixXu indices(3, 12); /* Draw a cube */
-    indices.col( 0) << 0, 1, 3;
-    indices.col( 1) << 3, 2, 1;
-    indices.col( 2) << 3, 2, 6;
-    indices.col( 3) << 6, 7, 3;
-    indices.col( 4) << 7, 6, 5;
-    indices.col( 5) << 5, 4, 7;
-    indices.col( 6) << 4, 5, 1;
-    indices.col( 7) << 1, 0, 4;
-    indices.col( 8) << 4, 0, 3;
-    indices.col( 9) << 3, 7, 4;
-    indices.col(10) << 5, 6, 2;
-    indices.col(11) << 2, 1, 5;
-
     boundPositions.col(0) << -dx,  dy,  dz;
     boundPositions.col(1) << -dx,  dy, -dz;
     boundPositions.col(2) <<  dx,  dy, -dz;
@@ -130,18 +110,46 @@ void Preview::setVoxels(Voxels *pVoxels) {
     boundPositions.col(6) <<  dx, -dy, -dz;
     boundPositions.col(7) <<  dx, -dy,  dz;
 
-    mShaderBounds.uploadIndices(indices);
+    MatrixXf boundColors(3, 8);
+    for (int i = 0; i < 8; ++i) {
+        boundColors.col(i) << 1.0, 0.0, 1.0;
+    }
+
+
+    mShaderBounds.bind();
+    mShaderBounds.uploadIndices(boundIndices);
     mShaderBounds.uploadAttrib("vPosition", boundPositions);
+    mShaderBounds.uploadAttrib("vColor", boundColors);
+
+
+    MatrixXu axisIndices(2, 3);
+    axisIndices.col(0) << 0, 1;
+    axisIndices.col(1) << 0, 2;
+    axisIndices.col(2) << 0, 3;
+
+    MatrixXf axisPositions(3, 4);
+    float far = 1e6;
+    axisPositions.col(0) << 0.0, 0.0, 0.0;
+    axisPositions.col(1) << far, 0.0, 0.0;
+    axisPositions.col(2) << 0.0, far, 0.0;
+    axisPositions.col(3) << 0.0, 0.0, far;
+
+    MatrixXf axisColors(3, 4);
+    axisColors.col(0) << 0.0, 0.0, 0.0;
+    axisColors.col(1) << 1.0, 0.0, 0.0;
+    axisColors.col(2) << 0.0, 1.0, 0.0;
+    axisColors.col(3) << 0.0, 0.0, 1.0;
+
+    mShaderAxis.bind();
+    mShaderAxis.uploadIndices(axisIndices);
+    mShaderAxis.uploadAttrib("vPosition", axisPositions);
+    mShaderAxis.uploadAttrib("vColor", axisColors);
+
     mReady = true;
 }
 
 void Preview::setLayer(float layer) {
     mLayer = layer;
-}
-
-void Preview::setViewInterval(int start, int end) {
-    mStart = start;
-    mEnd = end;
 }
 
 void Preview::drawGL() {
@@ -165,6 +173,10 @@ void Preview::drawGL() {
         mShaderBounds.bind();
         mShaderBounds.setUniform("mvp", mvp);
         mShaderBounds.drawIndexed(GL_TRIANGLES, 0, 12);
+
+        mShaderAxis.bind();
+        mShaderAxis.setUniform("mvp", mvp);
+        mShaderAxis.drawIndexed(GL_LINES, 0, 3);
 
         glDisable(GL_DEPTH_TEST);
         glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
@@ -198,4 +210,7 @@ void Preview::printVoxels() {
 
 Preview::~Preview() {
     mShaderVoxels.free();
+    mShaderBounds.free();
+    mShaderAxis.free();
+    mShaderLayer.free();
 }
