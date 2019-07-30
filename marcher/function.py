@@ -53,7 +53,8 @@ class Function:
 
     def __init__(self, fn, dependencies):
         self.name = fn.__name__
-        assert self.name not in self.registry, "Name %r has already been used" % self.name
+        # TODO: BUG: Temporary fix to allow reloading
+        # assert self.name not in self.registry, "Name %r has already been used" % self.name
         self.params = fn.__annotations__.copy()
         default = self._default_return()
         self.return_type = self.params.pop('return', default)
