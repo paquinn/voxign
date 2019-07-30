@@ -19,9 +19,16 @@ Viewer::Viewer() :
     {
         Button *voxelize = new Button(mToolBar, "Voxelize");
         voxelize->setCallback([this]() {
+
+            setInputFile("basic");
+            mVoxels.resizeBounds({10, 10, 10}, {1.0, 1.0, 1.0});
+
             tfm::printfln("Voxelizing %s layers", mVoxels.layerCount());
             mVoxels.voxelizeLayers(100000);
             mPreview->setVoxels(&mVoxels);
+
+            cout << a3f(mVoxels.volume()) << endl;
+            cout << a3i(mVoxels.bounds()) << endl;
         });
 
         Button *save = new Button(mToolBar, "Save");

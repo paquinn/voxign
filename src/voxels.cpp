@@ -44,8 +44,9 @@ void Voxels::renderLayer(unsigned long layerIndex) {
         mVoxignProgram.bind();
         mVoxignProgram.setUniform("slice", float(layerIndex));
 
+        // TODO: Don't need to set this every layer, set once outside
         Vector3f vol = volume();
-        Vector3f res = mBounds.cast<float>();
+        Vector3f res = bounds().cast<float>();
         mVoxignProgram.setUniform("resolution", res);
         mVoxignProgram.setUniform("volume", vol);
 
@@ -89,7 +90,6 @@ bool Voxels::voxelizeLayers(int count) {
     } else {
         for (int i = 0; i < count && !finished(); ++i) {
             voxelizeLayer();
-            cout << "voxelizing layer " << i << endl;
         }
         // TODO: This should only return true once when it has finished
         return finished();

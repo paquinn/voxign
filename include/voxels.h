@@ -108,6 +108,7 @@ public:
     bool finished();
     int progress();
 
+    Array3i bounds() { return mBounds; }
     Array2i layerSize() { return {mBounds.coeff(0), mBounds.coeff(1)}; }
     const int layerCount() { return mBounds.coeff(2); }
 

@@ -50,6 +50,9 @@ Eigen::Matrix<T, 3, 1> castTuple(std::tuple<T, T, T> tuple);
 Eigen::Array3f tupleToArray3f(std::tuple<float, float, float> tuple);
 Eigen::Array3i tupleToArray3i(std::tuple<int, int, int> tuple);
 
+// TODO: Also templates, see above
+std::string a3f(Eigen::Array3f arr);
+std::string a3i(Eigen::Array3i arr);
 
 using std::cout;
 using std::cerr;

@@ -73,6 +73,7 @@ void Preview::setVoxels(Voxels *pVoxels) {
     mShaderVoxels.uploadAttrib("vFaces", faces);
     Vector3f voxelSize = mVoxels->voxelSize();
     mShaderVoxels.setUniform("voxelSize", voxelSize);
+//    mShaderVoxels.setUniform("voxelSize", Vector3f{1.0, 1.0, 1.0});
     mSolidCount = solidCount;
     mInsideCount = insideCount;
 
@@ -84,7 +85,6 @@ void Preview::setVoxels(Voxels *pVoxels) {
     float dx = mVoxels->volume().coeff(0) / 2.0f;
     float dy = mVoxels->volume().coeff(1) / 2.0f;
     float dz = mVoxels->volume().coeff(2) / 2.0f;
-    tfm::printfln("Size %s %s %s", dx, dy, dz);
 //    boundPositions.col(0) << -dx, -dy, -dz;
 //    boundPositions.col(1) << dx, -dy, -dz;
 //    boundPositions.col(2) << -dx, dy, -dz;
