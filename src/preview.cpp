@@ -55,7 +55,7 @@ void Preview::setVoxels(Voxels *pVoxels) {
                         insideCount++;
                     } else {
                         int index = solidCount - insideCount;
-                        positions.col(index) << x - layers/2, y - height/2, z - width/2;
+                        positions.col(index) << x, y, z;
                         colors.col(index) << 1.0, 1.0, 1.0;
                         faces.col(index) << sides;
                     }
@@ -74,6 +74,8 @@ void Preview::setVoxels(Voxels *pVoxels) {
     mShaderVoxels.uploadAttrib("vFaces", faces);
     Vector3f voxelSize = mVoxels->voxelSize();
     mShaderVoxels.setUniform("voxelSize", voxelSize);
+    Vector3f volume = mVoxels->volume();
+    mShaderVoxels.setUniform("volume", volume);
 //    mShaderVoxels.setUniform("voxelSize", Vector3f{1.0, 1.0, 1.0});
 
     mSolidCount = solidCount;
