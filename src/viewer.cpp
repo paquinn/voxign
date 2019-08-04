@@ -6,7 +6,7 @@
 
 Viewer::Viewer() :
         // TODO: Change to resizeable back to true
-        nanogui::Screen(nanogui::Vector2i(800, 800), "Voxign", false),
+        nanogui::Screen(nanogui::Vector2i(950, 950), "Voxign", false),
         mVoxels(),
         mCompiler()
 {
@@ -45,7 +45,7 @@ Viewer::Viewer() :
 
         mPreview = new Preview(previewWindow);
         mPreview->setBackgroundColor({100, 100, 100, 255});
-        mPreview->setSize({600, 600});
+        mPreview->setSize({400, 400});
     }
 
     performLayout();
@@ -76,6 +76,8 @@ void Viewer::drawContents() {
         mRenderProgram.bind();
         mRenderProgram.setUniform("resolution", Vector2f{mFBSize[0], mFBSize[1]});
         mRenderProgram.setUniform("mouse", Vector2f{mMousePos[0], mMousePos[1]}, false);
+//        cout << mPreview->camPos() << endl;
+        mRenderProgram.setUniform("cam", mPreview->camPos());
         mRenderProgram.draw();
     }
 }

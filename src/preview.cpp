@@ -20,6 +20,10 @@ Preview::Preview(Widget *parent)
     mTrackball.setCamera(&mCamera);
 }
 
+Vector3f Preview::camPos() {
+    return mCamera.position();
+}
+
 void Preview::setVoxels(Voxels *pVoxels) {
     // TODO: Might not be needed
 //    if (mShaderVoxels.hasAttrib("vPosition")) {

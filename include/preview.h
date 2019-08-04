@@ -13,6 +13,8 @@ public:
     Preview(nanogui::Widget* parent);
     ~Preview() override;
 
+    Vector3f camPos();
+
     void setVoxels(Voxels *voxels);
     void setLayer(float layer);
 

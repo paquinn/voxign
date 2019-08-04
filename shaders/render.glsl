@@ -1,6 +1,8 @@
 uniform vec2 resolution;
 uniform float time;
 uniform vec2 mouse;
+uniform vec3 cam;
+
 
 // [statics]
 
@@ -117,7 +119,8 @@ void main()
     vec2 mouse = mouse.xy/resolution.xy;
     float time = 15.0 + time;
 
-    vec3 ray_origin = vec3(10.*sin(10.*mouse.x), 2. + 20.*(mouse.y - 0.5), 10.*cos(10.*mouse.x));
+//    vec3 ray_origin = vec3(10.*sin(10.*mouse.x), 2. + 20.*(mouse.y - 0.5), 10.*cos(10.*mouse.x));
+    vec3 ray_origin = cam;
     vec3 ta = TA;
     mat3 ca = setCamera(ray_origin, ta, 0.0);
 
