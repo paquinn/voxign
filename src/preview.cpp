@@ -196,36 +196,46 @@ void Preview::drawGL() {
 }
 
 bool Preview::mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers) {
-    if (down) {
-        mMousePos = p;
-        switch (button) {
-            case GLFW_MOUSE_BUTTON_LEFT:
-                mTrackball.start(Trackball::Around);
-                mTrackball.track(mMousePos);
-                mTrackMode = TM_ROTATE_AROUND;
-                break;
-            case GLFW_MOUSE_BUTTON_MIDDLE:
-                break;
-            case GLFW_MOUSE_BUTTON_RIGHT:
-                break;
-            default:
-                break;
+    if (mReady) {
+        if (down) {
+            mMousePos = p;
+            switch (button) {
+                case GLFW_MOUSE_BUTTON_LEFT:
+                    mTrackball.start(Trackball::Around);
+                    mTrackball.track(mMousePos);
+                    mTrackMode = TM_ROTATE_AROUND;
+                    break;
+                case GLFW_MOUSE_BUTTON_MIDDLE:
+                    break;
+                case GLFW_MOUSE_BUTTON_RIGHT:
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            mTrackMode = TM_NO_TRACK;
         }
-    } else {
-        mTrackMode = TM_NO_TRACK;
     }
     return true;
 }
 
 bool Preview::mouseMotionEvent(const Eigen::Vector2i &p, const Eigen::Vector2i &rel, int button, int modifiers) {
-//    cout << p << endl;
 //    tfm::printfln("p coords: (%s, %s), trackmode: %s", p[0], p[1], mTrackMode);
-    if (mTrackMode != TM_NO_TRACK) {
-        float dx =   float(p[0] - mMousePos[0]) / float(mCamera.vpWidth());
-        float dy = - float(p[1] - mMousePos[1]) / float(mCamera.vpHeight());
-        mTrackball.track(p);
+    if (mReady) {
+        if (mTrackMode != TM_NO_TRACK) {
+//            float dx = float(p[0] - mMousePos[0]) / float(mCamera.vpWidth());
+//            float dy = -float(p[1] - mMousePos[1]) / float(mCamera.vpHeight());
+            mTrackball.track(p);
+        }
+        mMousePos = p;
     }
-    mMousePos = p;
+    return true;
+}
+
+bool Preview::scrollEvent(const Eigen::Vector2i &p, const Eigen::Vector2f &rel) {
+    if (mReady) {
+        mCamera.zoom(rel[1] * 1.f);
+    }
     return true;
 }
 

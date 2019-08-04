@@ -22,7 +22,7 @@ protected:
 //    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers);
     virtual bool mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers);
     virtual bool mouseMotionEvent(const Eigen::Vector2i &p, const Eigen::Vector2i &rel, int button, int modifiers);
-//    virtual bool scrollEvent(const Eigen::Vector2i &p, const Eigen::Vector2f &rel);
+    virtual bool scrollEvent(const Eigen::Vector2i &p, const Eigen::Vector2f &rel);
 
 private:
     inline bool isSolid(const RGB &voxel);
