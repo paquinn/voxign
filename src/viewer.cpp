@@ -21,7 +21,7 @@ Viewer::Viewer() :
         voxelize->setCallback([this]() {
 
             setInputFile("basic");
-            mVoxels.resizeBounds({27, 27, 27}, {0.1, 0.1, 0.1});
+            mVoxels.resizeBounds({100, 100, 100}, {0.1, 0.1, 0.1});
 
             tfm::printfln("Voxelizing %s layers", mVoxels.layerCount());
             mVoxels.voxelizeLayers(100000);

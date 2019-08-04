@@ -40,31 +40,40 @@ void Preview::setVoxels(Voxels *pVoxels) {
     int width = size.coeff(0);
     int height = size.coeff(1);
 
-    for (int z = 0; z < layers; ++z) {
-        for (int y = 0; y < height; ++y) {
-            for (int x = 0; x < width; ++x) {
-                if (isSolid(mVoxels->index(x, y, z))) {
-                    int sides = 0;
-                    sides |= isSolid(mVoxels->index(x + 1, y, z)) << 0;
-                    sides |= isSolid(mVoxels->index(x - 1, y, z)) << 1;
-                    sides |= isSolid(mVoxels->index(x, y + 1, z)) << 2;
-                    sides |= isSolid(mVoxels->index(x, y - 1, z)) << 3;
-                    sides |= isSolid(mVoxels->index(x, y, z + 1)) << 4;
-                    sides |= isSolid(mVoxels->index(x, y, z - 1)) << 5;
-                    if (sides == 0b111111) {
-                        insideCount++;
-                    } else {
-                        int index = solidCount - insideCount;
-                        positions.col(index) << x, y, z;
-                        colors.col(index) << 1.0, 1.0, 1.0;
-                        faces.col(index) << sides;
-                    }
-
-                    solidCount++;
+    auto start = std::chrono::system_clock::now();
+    int iters = 10;
+    for (int i = 0; i < iters; ++i) {
+        for (int z = 0; z < layers; ++z) {
+            for (int y = 0; y < height; ++y) {
+                for (int x = 0; x < width; ++x) {
+                    mVoxels->index(x, y, z);
+//                if (isSolid(mVoxels->index(x, y, z))) {
+//                    int sides = 0;
+//                    sides |= isSolid(mVoxels->index(x + 1, y, z)) << 0;
+//                    sides |= isSolid(mVoxels->index(x - 1, y, z)) << 1;
+//                    sides |= isSolid(mVoxels->index(x, y + 1, z)) << 2;
+//                    sides |= isSolid(mVoxels->index(x, y - 1, z)) << 3;
+//                    sides |= isSolid(mVoxels->index(x, y, z + 1)) << 4;
+//                    sides |= isSolid(mVoxels->index(x, y, z - 1)) << 5;
+//                    if (sides == 0b111111) {
+//                        insideCount++;
+//                    } else {
+//                        int index = solidCount - insideCount;
+//                        positions.col(index) << x, y, z;
+//                        colors.col(index) << 1.0, 1.0, 1.0;
+//                        faces.col(index) << sides;
+//                    }
+//
+//                    solidCount++;
+//                }
                 }
             }
         }
     }
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<float> elapsed = end - start;
+
+    tfm::printfln("Voxel loop average %s seconds in  %s iterations", elapsed.count() / iters, iters);
 
     // TODO: Resize these matrix arrays before sending them to the gpu
     // TODO: Or consider adding them to a vector and then creating the matrix from .data()
