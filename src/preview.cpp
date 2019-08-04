@@ -15,6 +15,10 @@ Preview::Preview(Widget *parent)
     mShaderAxis.initFromFiles("axis",
                               DATA_DIR"/shaders/bounds.vert",
                               DATA_DIR"/shaders/voxels.frag");
+
+    mCamera = Camera();
+    mCamera.setViewport(mSize[0], mSize[1]);
+    mTrackball.setCamera(&mCamera);
 }
 
 void Preview::setVoxels(Voxels *pVoxels) {
@@ -41,7 +45,6 @@ void Preview::setVoxels(Voxels *pVoxels) {
     int height = size.coeff(1);
 
     auto start = std::chrono::system_clock::now();
-
     for (int z = 0; z < layers; ++z) {
         for (int y = 0; y < height; ++y) {
             for (int x = 0; x < width; ++x) {
@@ -166,12 +169,10 @@ void Preview::drawGL() {
         if (mWireframe) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
         glEnable(GL_DEPTH_TEST);
 
-        Matrix4f mvp;
-        mvp.setIdentity();
-        float fTime = (float) glfwGetTime();
-        mvp.topLeftCorner<3, 3>() = Eigen::Matrix3f(Eigen::AngleAxisf(mRotation[0] * fTime, Vector3f::UnitX()) *
-                                                    Eigen::AngleAxisf(mRotation[1] * fTime, Vector3f::UnitY()) *
-                                                    Eigen::AngleAxisf(mRotation[2] * fTime, Vector3f::UnitZ())) * 0.25f;
+        Matrix4f model = Matrix4f(Eigen::Affine3f::Identity().data());
+        Matrix4f view = Matrix4f(mCamera.viewMatrix().data());
+        Matrix4f projection = mCamera.projectionMatrix();
+        Matrix4f mvp = projection * view * model;
 
         mShaderVoxels.bind();
         mShaderVoxels.setUniform("mvp", mvp);
@@ -190,6 +191,15 @@ void Preview::drawGL() {
         glDisable(GL_DEPTH_TEST);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
+}
+
+void Preview::framebufferSizeChanged()
+{
+    cout << "Frame buffer callback" << endl;
+//    m_GLCamera.setViewport(mFBSize[0],mFBSize[1]-50);
+//    m_panel->setSize(Eigen::Vector2i(m_GLCamera.vpWidth(),50));
+//    performLayout(mNVGContext);
+//    m_panel->setPosition(Eigen::Vector2i((m_GLCamera.vpWidth() - m_panel->size().x()) / 2, m_GLCamera.vpHeight()));
 }
 
 inline bool Preview::isSolid(const RGB &voxel) {

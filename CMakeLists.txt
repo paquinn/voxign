@@ -28,6 +28,9 @@ add_executable(voxign
         include/voxels.h
         include/compiler.h
         include/pixels.h
+        include/preview.h
+        include/camera.h
+        include/trackball.h
 
         src/main.cpp
         src/viewer.cpp
@@ -35,7 +38,10 @@ add_executable(voxign
         src/voxels.cpp
         src/compiler.cpp
         src/pixels.cpp
-        include/preview.h src/preview.cpp include/camera.h include/trackball.h include/render.h)
+        src/preview.cpp
+        src/camera.cpp
+        src/trackball.cpp
+        )
 
 target_link_libraries(voxign 
     nanogui ${NANOGUI_EXTRA_LIBS} 

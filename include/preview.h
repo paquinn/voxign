@@ -3,6 +3,8 @@
 
 #include "common.h"
 #include "voxels.h"
+#include "camera.h"
+#include "trackball.h"
 
 #include <nanogui/nanogui.h>
 
@@ -15,6 +17,7 @@ public:
     void setLayer(float layer);
 
     void drawGL() override;
+    virtual void framebufferSizeChanged();
 
 private:
     inline bool isSolid(const RGB &voxel);
@@ -31,6 +34,8 @@ private:
     nanogui::GLShader mShaderLayer;
 
     Eigen::Vector3f mRotation;
+    Camera mCamera;
+    Trackball mTrackball;
 
     bool mReady = false;
     bool mWireframe = false;
