@@ -45,7 +45,7 @@ Viewer::Viewer() :
 
         mPreview = new Preview(previewWindow);
         mPreview->setBackgroundColor({100, 100, 100, 255});
-        mPreview->setSize({400, 400});
+        mPreview->setSize({600, 600});
     }
 
     performLayout();

@@ -17,7 +17,6 @@ Preview::Preview(Widget *parent)
                               DATA_DIR"/shaders/voxels.frag");
 
     mCamera = Camera();
-    mCamera.setViewport(mSize[0], mSize[1]);
     mTrackball.setCamera(&mCamera);
 }
 
@@ -169,6 +168,9 @@ void Preview::drawGL() {
         if (mWireframe) { glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); }
         glEnable(GL_DEPTH_TEST);
 
+        // TODO: Should only happen once
+        mCamera.setViewport(mSize[0], mSize[1]);
+
         Matrix4f model = Matrix4f(Eigen::Affine3f::Identity().data());
         Matrix4f view = Matrix4f(mCamera.viewMatrix().data());
         Matrix4f projection = mCamera.projectionMatrix();
@@ -193,13 +195,38 @@ void Preview::drawGL() {
     }
 }
 
-void Preview::framebufferSizeChanged()
-{
-    cout << "Frame buffer callback" << endl;
-//    m_GLCamera.setViewport(mFBSize[0],mFBSize[1]-50);
-//    m_panel->setSize(Eigen::Vector2i(m_GLCamera.vpWidth(),50));
-//    performLayout(mNVGContext);
-//    m_panel->setPosition(Eigen::Vector2i((m_GLCamera.vpWidth() - m_panel->size().x()) / 2, m_GLCamera.vpHeight()));
+bool Preview::mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers) {
+    if (down) {
+        mMousePos = p;
+        switch (button) {
+            case GLFW_MOUSE_BUTTON_LEFT:
+                mTrackball.start(Trackball::Around);
+                mTrackball.track(mMousePos);
+                mTrackMode = TM_ROTATE_AROUND;
+                break;
+            case GLFW_MOUSE_BUTTON_MIDDLE:
+                break;
+            case GLFW_MOUSE_BUTTON_RIGHT:
+                break;
+            default:
+                break;
+        }
+    } else {
+        mTrackMode = TM_NO_TRACK;
+    }
+    return true;
+}
+
+bool Preview::mouseMotionEvent(const Eigen::Vector2i &p, const Eigen::Vector2i &rel, int button, int modifiers) {
+//    cout << p << endl;
+//    tfm::printfln("p coords: (%s, %s), trackmode: %s", p[0], p[1], mTrackMode);
+    if (mTrackMode != TM_NO_TRACK) {
+        float dx =   float(p[0] - mMousePos[0]) / float(mCamera.vpWidth());
+        float dy = - float(p[1] - mMousePos[1]) / float(mCamera.vpHeight());
+        mTrackball.track(p);
+    }
+    mMousePos = p;
+    return true;
 }
 
 inline bool Preview::isSolid(const RGB &voxel) {

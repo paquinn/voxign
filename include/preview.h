@@ -17,7 +17,12 @@ public:
     void setLayer(float layer);
 
     void drawGL() override;
-    virtual void framebufferSizeChanged();
+
+protected:
+//    virtual bool keyboardEvent(int key, int scancode, int action, int modifiers);
+    virtual bool mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, int modifiers);
+    virtual bool mouseMotionEvent(const Eigen::Vector2i &p, const Eigen::Vector2i &rel, int button, int modifiers);
+//    virtual bool scrollEvent(const Eigen::Vector2i &p, const Eigen::Vector2f &rel);
 
 private:
     inline bool isSolid(const RGB &voxel);
@@ -35,7 +40,14 @@ private:
 
     Eigen::Vector3f mRotation;
     Camera mCamera;
+    enum TrackMode {
+        TM_NO_TRACK=0, TM_ROTATE_AROUND
+    };
+    TrackMode mTrackMode;
     Trackball mTrackball;
+
+    Eigen::Vector2i mMousePos;
+
 
     bool mReady = false;
     bool mWireframe = false;
