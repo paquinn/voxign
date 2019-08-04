@@ -17,7 +17,7 @@ public:
     void drawGL() override;
 
 private:
-    bool isSolid(RGB voxel);
+    inline bool isSolid(const RGB &voxel);
     void printVoxels();
 
     Voxels *mVoxels;

@@ -119,7 +119,7 @@ public:
     Array3f calcVolume() { return mVoxelSize.cwiseProduct(mBounds.cast<float>()); }
     Array3i calcBounds() { return mVolume.cwiseQuotient(mVoxelSize).ceil().cast<int>(); }
 
-    RGB index(int x, int y, int z);
+    const RGB &index(int x, int y, int z);
 private:
     bool finishedLayer(unsigned long layer);
     void renderLayer(unsigned long layer);
@@ -127,6 +127,8 @@ private:
     void saveLayer(unsigned long layer);
 
     void resizeLayers(unsigned long layers);
+
+    const RGB mOutside;
 
     Array3f mVolume;
     Array3i mBounds;

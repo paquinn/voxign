@@ -4,7 +4,7 @@
 
 Voxels::Voxels() {
     // TODO: Find better solution to default values
-    resizeBounds({10, 10, 10}, {1.0, 1.0, 1.0});
+    resizeBounds({10, 10, 10}, {1.0, 1.0, 1.0}), mOutside(0.0);
 }
 
 void Voxels::setShader(const std::string &shader) {
@@ -135,12 +135,12 @@ void Voxels::saveVoxels(const std::string &folder) {
     }
 }
 
-RGB Voxels::index(int x, int y, int z) {
+const RGB& Voxels::index(int x, int y, int z) {
     if (z < 0 || z >= layerCount() ||
             x < 0 || x >= layerSize().coeff(0) ||
             y < 0 || y >= layerSize().coeff(1)) {
 //        tfm::printfln("Outside bounds %s,%s,%s", x, y, z);
-        return {0.0};
+        return mOutside;
     } else {
         return mVoxels.at(z)(x, y);
     }
