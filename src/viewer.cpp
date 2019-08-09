@@ -76,8 +76,8 @@ void Viewer::drawContents() {
         mRenderProgram.bind();
         mRenderProgram.setUniform("resolution", Vector2f{mFBSize[0], mFBSize[1]});
         mRenderProgram.setUniform("mouse", Vector2f{mMousePos[0], mMousePos[1]}, false);
-//        cout << mPreview->camPos() << endl;
-        mRenderProgram.setUniform("cam", mPreview->camPos());
+        mRenderProgram.setUniform("cameraPosition", mPreview->cameraPosition());
+        mRenderProgram.setUniform("cameraOrientation", mPreview->cameraOrientation());
         mRenderProgram.draw();
     }
 }

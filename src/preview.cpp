@@ -20,10 +20,6 @@ Preview::Preview(Widget *parent)
     mTrackball.setCamera(&mCamera);
 }
 
-Vector3f Preview::camPos() {
-    return mCamera.position();
-}
-
 void Preview::setVoxels(Voxels *pVoxels) {
     // TODO: Might not be needed
 //    if (mShaderVoxels.hasAttrib("vPosition")) {
@@ -53,18 +49,20 @@ void Preview::setVoxels(Voxels *pVoxels) {
             for (int x = 0; x < width; ++x) {
                 if (isSolid(mVoxels->index(x, y, z))) {
                     int sides = 0;
-                    sides |= isSolid(mVoxels->index(x + 1, y, z)) << 0;
-                    sides |= isSolid(mVoxels->index(x - 1, y, z)) << 1;
-                    sides |= isSolid(mVoxels->index(x, y + 1, z)) << 2;
-                    sides |= isSolid(mVoxels->index(x, y - 1, z)) << 3;
+                    sides |= isSolid(mVoxels->index(x + 1, y, z)) << 2;
+                    sides |= isSolid(mVoxels->index(x - 1, y, z)) << 3;
+                    sides |= isSolid(mVoxels->index(x, y + 1, z)) << 0;
+                    sides |= isSolid(mVoxels->index(x, y - 1, z)) << 1;
                     sides |= isSolid(mVoxels->index(x, y, z + 1)) << 4;
                     sides |= isSolid(mVoxels->index(x, y, z - 1)) << 5;
                     if (sides == 0b111111) {
                         insideCount++;
                     } else {
                         int index = solidCount - insideCount;
-                        positions.col(index) << x, y, z;
-                        colors.col(index) << 1.0, 1.0, 1.0;
+                        // TODO: y and x must be flipped here, this has something to
+                        // do with converting between coordinate systems. Further investigation
+                        positions.col(index) << y, x, z;
+                        colors.col(index) << x / float(width), y / float(height), z / float(layers);
                         faces.col(index) << sides;
                     }
 
@@ -225,6 +223,7 @@ bool Preview::mouseButtonEvent(const Eigen::Vector2i &p, int button, bool down, 
 
 bool Preview::mouseMotionEvent(const Eigen::Vector2i &p, const Eigen::Vector2i &rel, int button, int modifiers) {
 //    tfm::printfln("p coords: (%s, %s), trackmode: %s", p[0], p[1], mTrackMode);
+//    cout << mCamera.orientationMatrix() << endl;
     if (mReady) {
         if (mTrackMode != TM_NO_TRACK) {
 //            float dx = float(p[0] - mMousePos[0]) / float(mCamera.vpWidth());

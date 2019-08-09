@@ -77,6 +77,7 @@ class Camera
 
     const Eigen::Affine3f& viewMatrix(void) const;
     const Eigen::Matrix4f& projectionMatrix(void) const;
+    Eigen::Matrix3f orientationMatrix() const;
 
     void rotateAroundTarget(const Eigen::Quaternionf& q);
     void localRotate(const Eigen::Quaternionf& q);

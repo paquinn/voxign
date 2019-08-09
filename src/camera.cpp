@@ -7,6 +7,7 @@
 // Public License v. 2.0. If a copy of the MPL was not distributed
 // with this file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#include <iostream>
 #include "camera.h"
 
 #include "Eigen/LU"
@@ -243,6 +244,9 @@ const Matrix4f& Camera::projectionMatrix(void) const
   return mProjectionMatrix;
 }
 
+Eigen::Matrix3f Camera::orientationMatrix() const {
+    return mFrame.orientation.toRotationMatrix();
+}
 
 Vector3f Camera::unProject(const Vector2f& uv, float depth) const
 {

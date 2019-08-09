@@ -13,7 +13,8 @@ public:
     Preview(nanogui::Widget* parent);
     ~Preview() override;
 
-    Vector3f camPos();
+    Vector3f cameraPosition() { return mCamera.position(); }
+    Matrix3f cameraOrientation() { return mCamera.orientationMatrix(); }
 
     void setVoxels(Voxels *voxels);
     void setLayer(float layer);

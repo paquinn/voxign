@@ -5,7 +5,7 @@ from marcher.library import *
 @Object.register()
 def Basic(self):
     # self.res(Union, Sphere(2.0).at(vec3(1, 2, 3)))
-    bigR = 4.5
+    bigR = 3.5
     s1 = 1.5
     s2 = 2.0
     s3 = 2.5

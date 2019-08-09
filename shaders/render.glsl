@@ -1,8 +1,8 @@
 uniform vec2 resolution;
 uniform float time;
 uniform vec2 mouse;
-uniform vec3 cam;
-
+uniform vec3 cameraPosition;
+uniform mat3 cameraOrientation;
 
 // [statics]
 
@@ -28,16 +28,6 @@ vec3 normal(in vec3 p) {
     vec2 e = vec2(1., 0) * 0.01;
     vec3 n = d - vec3(DE(p-e.xyy),DE(p-e.yxy), DE(p-e.yyx));
     return normalize(n);
-}
-
-
-mat3 setCamera( in vec3 ro, in vec3 ta, float cr )
-{
-    vec3 cw = normalize(ta-ro);
-    vec3 cp = vec3(sin(cr), cos(cr),0.0);
-    vec3 cu = normalize( cross(cw,cp) );
-    vec3 cv =          ( cross(cu,cw) );
-    return mat3( cu, cv, cw );
 }
 
 float calcAO( in vec3 pos, in vec3 nor ) {
@@ -71,7 +61,7 @@ float calcSoftshadow( in vec3 ro, in vec3 rd, in float mint, in float tmax )
 }
 
 vec3 render(in vec3 ro, in vec3 rd) {
-    vec3 col = BACKGROUND +rd.y*0.8;
+    vec3 col = BACKGROUND +rd.z*0.8;
 
     float t = raymarch(ro, rd);
 
@@ -113,16 +103,25 @@ vec3 render(in vec3 ro, in vec3 rd) {
     return vec3( clamp(col,0.0,1.0) );
 }
 
+mat3 setCamera( in vec3 ro, in vec3 ta, float cr )
+{
+    vec3 wu = vec3(0.0, 1.0, 0.0);
+    vec3 cf = normalize(ta-ro);
+    vec3 cu = normalize( cross(cf,wu) );
+    vec3 cv =          ( cross(cu,cf) );
+    return mat3( cu, cf, cv );
+}
+
 void main()
 {
-
     vec2 mouse = mouse.xy/resolution.xy;
     float time = 15.0 + time;
 
 //    vec3 ray_origin = vec3(10.*sin(10.*mouse.x), 2. + 20.*(mouse.y - 0.5), 10.*cos(10.*mouse.x));
-    vec3 ray_origin = cam;
-    vec3 ta = TA;
-    mat3 ca = setCamera(ray_origin, ta, 0.0);
+    vec3 ray_origin = cameraPosition;
+//    vec3 ta = TA;
+//    mat3 ca = setCamera(ray_origin, ta, 0.0);
+    mat3 ca = cameraOrientation;
 
     vec3 tot = vec3(0.0);
     #if AA > 1
@@ -133,7 +132,8 @@ void main()
             #else
             vec2 p = (2.0*gl_FragCoord.xy - resolution.xy)/resolution.y;
             #endif
-            vec3 ray_direction = ca * normalize(vec3(p.x, p.y, 2.0));
+            // Multiply by negative one because our orientation matrix is flipped
+            vec3 ray_direction = ca * normalize(vec3(p.x, p.y, -1.0));
             vec3 col = render(ray_origin, ray_direction);
 
             tot += col;
