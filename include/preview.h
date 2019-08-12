@@ -41,14 +41,12 @@ private:
     nanogui::GLShader mShaderAxis;
     nanogui::GLShader mShaderLayer;
 
-    Eigen::Vector3f mRotation;
     Camera mCamera;
     enum TrackMode {
         TM_NO_TRACK=0, TM_ROTATE_AROUND
     };
     TrackMode mTrackMode;
     Trackball mTrackball;
-
     Eigen::Vector2i mMousePos;
 
 

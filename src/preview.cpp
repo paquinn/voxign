@@ -4,7 +4,7 @@ using namespace nanogui;
 
 
 Preview::Preview(Widget *parent)
-        : GLCanvas(parent), mRotation(nanogui::Vector3f(0.25f, 0.5f, 0.33f)) {
+        : GLCanvas(parent) {
     mShaderVoxels.initFromFiles("voxels",
                                 DATA_DIR"/shaders/voxels.vert",
                                 DATA_DIR"/shaders/voxels.frag",
@@ -18,6 +18,7 @@ Preview::Preview(Widget *parent)
 
     mCamera = Camera();
     mTrackball.setCamera(&mCamera);
+    mTrackMode = TM_NO_TRACK;
 }
 
 void Preview::setVoxels(Voxels *pVoxels) {

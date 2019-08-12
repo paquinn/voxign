@@ -25,7 +25,7 @@ Camera::Camera()
     mVpX = 0;
     mVpY = 0;
 
-    lookAt(Vector3f(20., 25., 20.), Vector3f::Zero(), Vector3f::UnitZ());
+    lookAt(Vector3f(10., 10., 10.), Vector3f::Zero(), Vector3f::UnitY());
 }
 
 Camera& Camera::operator=(const Camera& other)

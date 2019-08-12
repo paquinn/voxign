@@ -61,7 +61,7 @@ float calcSoftshadow( in vec3 ro, in vec3 rd, in float mint, in float tmax )
 }
 
 vec3 render(in vec3 ro, in vec3 rd) {
-    vec3 col = BACKGROUND +rd.z*0.8;
+    vec3 col = BACKGROUND + rd.y * 0.8;
 
     float t = raymarch(ro, rd);
 

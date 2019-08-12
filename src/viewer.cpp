@@ -40,7 +40,7 @@ Viewer::Viewer() :
 
     {
         Window *previewWindow = new Window(this, "Preview");
-        previewWindow->setPosition(Vector2i(15, 15));
+        previewWindow->setPosition(Vector2i(30, 30));
         previewWindow->setLayout(new GroupLayout());
 
         mPreview = new Preview(previewWindow);
