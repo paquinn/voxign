@@ -1,5 +1,9 @@
 # Voxign
 A tool for voxelizing SDF models with preview window for output.
+
+## Screen Shot
+![Screenshot](https://raw.githubusercontent.com/paquinn/voxign/master/resources/basic.png)
+
 ## Usage
 ### GUI
 The **Test** and **Preview** windows can be moved around as desired.
