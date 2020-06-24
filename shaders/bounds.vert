@@ -1,8 +1,8 @@
 #version 330
 
 uniform mat4 mvp;
-attribute vec3 vPosition;
-attribute vec3 vColor;
+in vec3 vPosition;
+in vec3 vColor;
 
 flat out lowp vec3 fColor;
 

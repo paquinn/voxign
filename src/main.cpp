@@ -4,6 +4,7 @@
 
 #include "viewer.h"
 #include "voxels.h"
+#include <args.hxx>
 
 using namespace std;
 using namespace args;
@@ -23,9 +24,9 @@ int parseArgs(const vector<string> &args) {
 
     HelpFlag helpFlag {parser, "HELP", "Display help menu.", {'h', "help"}};
 
-    ValueFlag<tuple3f> volumeFlag {parser, "VOLUME", "Volume for the voxelization. For verison number use --version.", {'v', "volume"}};
-    ValueFlag<tuple3i> boundsFlag {parser, "BOUNDS", "Number of voxels in each dimension.", {'b', "bounds"}};
-    ValueFlag<tuple3f> sizeFlag {parser, "SIZE", "Size of the voxels.", {'s', "size"}};
+    ValueFlag<tuple3f, TupleReader<float>> volumeFlag {parser, "VOLUME", "Volume for the voxelization. For verison number use --version.", {'v', "volume"}};
+    ValueFlag<tuple3i, TupleReader<int>> boundsFlag {parser, "BOUNDS", "Number of voxels in each dimension.", {'b', "bounds"}};
+    ValueFlag<tuple3f, TupleReader<float>> sizeFlag {parser, "SIZE", "Size of the voxels.", {'s', "size"}};
 
     Flag autoFlag {parser, "AUTO", "Auto mode will output voxelization without opening window. Must have INPUT and OUTPUT set.have INPUT and OUTPUT set.", {'a', "auto"}};
 

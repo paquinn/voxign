@@ -32,16 +32,29 @@ typedef std::tuple<int, int, int> tuple3i;
 typedef std::tuple<float, float, float> tuple3f;
 
 template<typename T>
-std::istream& operator>>(std::istream& is, std::tuple<T, T, T>& tuple) {
-    const std::string errorMessage = tfm::format("Tuple not formatted correctly, needs three comma separated values.");
-    if (!is) { throw args::ParseError(errorMessage); } else { is >> std::get<0>(tuple); }
-    if (!is) { throw args::ParseError(errorMessage); } else { is.get(); }
-    if (!is) { throw args::ParseError(errorMessage); } else { is >> std::get<1>(tuple); }
-    if (!is) { throw args::ParseError(errorMessage); } else { is.get(); }
-    if (!is) { throw args::ParseError(errorMessage); } else { is >> std::get<2>(tuple); }
-    if (!is) { throw args::ParseError(errorMessage); }
-    return is;
-}
+struct TupleReader {
+    void operator()(const std::string &name, const std::string &value, std::tuple<T, T, T> &destination) {
+        const std::string errorMessage = tfm::format("Tuple not formatted correctly, needs three comma separated values.");
+        std::istringstream is(value);
+        if (!is) { throw args::ParseError(errorMessage); } else { is >> std::get<0>(destination); }
+        if (!is) { throw args::ParseError(errorMessage); } else { is.get(); }
+        if (!is) { throw args::ParseError(errorMessage); } else { is >> std::get<1>(destination); }
+        if (!is) { throw args::ParseError(errorMessage); } else { is.get(); }
+        if (!is) { throw args::ParseError(errorMessage); } else { is >> std::get<2>(destination); }
+        if (!is) { throw args::ParseError(errorMessage); }
+    }
+};
+
+//std::istream& operator>>(std::istream& is, std::tuple<T, T, T>& tuple) {
+//    const std::string errorMessage = tfm::format("Tuple not formatted correctly, needs three comma separated values.");
+//    if (!is) { throw args::ParseError(errorMessage); } else { is >> std::get<0>(tuple); }
+//    if (!is) { throw args::ParseError(errorMessage); } else { is.get(); }
+//    if (!is) { throw args::ParseError(errorMessage); } else { is >> std::get<1>(tuple); }
+//    if (!is) { throw args::ParseError(errorMessage); } else { is.get(); }
+//    if (!is) { throw args::ParseError(errorMessage); } else { is >> std::get<2>(tuple); }
+//    if (!is) { throw args::ParseError(errorMessage); }
+//    return is;
+//}
 
 template<typename T>
 Eigen::Matrix<T, 3, 1> castTuple(std::tuple<T, T, T> tuple);

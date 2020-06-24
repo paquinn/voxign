@@ -1,8 +1,10 @@
+#version 330
 uniform vec2 resolution;
 uniform float time;
 uniform vec2 mouse;
 uniform vec3 cameraPosition;
 uniform mat3 cameraOrientation;
+out vec4 color;
 
 // [statics]
 
@@ -143,5 +145,5 @@ void main()
     tot /= float(AA * AA);
     #endif
 
-    gl_FragColor = vec4(tot, 1.0);
+    color = vec4(tot, 1.0);
 }

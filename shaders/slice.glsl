@@ -5,6 +5,8 @@ uniform vec3 resolution;
 uniform vec3 offset;
 uniform float slice;
 
+out vec4 color;
+
 // [statics]
 
 // [functions]
@@ -28,7 +30,7 @@ void main()
     float t = DE(p);
     float col = t <= 0.0 ? 1.0 : 0.0;
 
-    gl_FragColor = vec4(vec3(col), 1.0);
+    color = vec4(vec3(col), 1.0);
 
 }
 

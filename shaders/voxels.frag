@@ -1,7 +1,8 @@
 #version 330
 
 flat in lowp vec3 fColor;
+out vec4 color;
 
 void main() {
-    gl_FragColor = vec4(fColor, 1.0);
+    color = vec4(fColor, 1.0);
 }

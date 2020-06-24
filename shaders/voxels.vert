@@ -5,9 +5,9 @@ uniform mat4 mvp;
 uniform vec3 voxelSize;
 uniform vec3 volume;
 
-attribute vec3 vPosition;
-attribute vec3 vColor;
-attribute float vFaces;
+in vec3 vPosition;
+in vec3 vColor;
+in float vFaces;
 
 flat out lowp vec3 gColor;
 flat out int gFaces;
