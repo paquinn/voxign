@@ -3,6 +3,14 @@ __pycache__/
 
 .idea/
 cmake-build-debug/
+cmake-build-release/
+CMakeFiles/
 
+ext/*
+
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+voxign*
 *.png
 
